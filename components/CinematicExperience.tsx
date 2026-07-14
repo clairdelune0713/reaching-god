@@ -198,7 +198,7 @@ export default function CinematicExperience() {
     setIsEntered(true);
     document.body.classList.remove("loading-locked");
 
-    fadeAudio(0.5, 2000); // 2s celestial slow fade in
+    fadeAudio(0.25, 2000); // 2s celestial slow fade in
     setSoundOn(true);
 
     setTimeout(() => {
@@ -567,7 +567,7 @@ export default function CinematicExperience() {
   const toggleAmbience = useCallback(() => {
     const enable = !soundOn;
     if (enable) {
-      fadeAudio(0.5, 1400);
+      fadeAudio(0.25, 1400);
       setSoundOn(true);
     } else {
       fadeAudio(0, 500);
