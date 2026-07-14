@@ -140,38 +140,57 @@ export default function CinematicExperience() {
     const audio = bgmRef.current;
     if (!audio) return;
 
-    if (targetVolume > 0 && audio.paused) {
-      audio.play().catch(() => {
-        // Safe Autoplay Fallback: Register a one-time gesture listener on any interaction
-        const playOnInteraction = () => {
-          audio.play().then(() => {
-            fadeAudio(targetVolume, durationMs);
-          }).catch(() => undefined);
-          window.removeEventListener("click", playOnInteraction);
-          window.removeEventListener("touchstart", playOnInteraction);
-          window.removeEventListener("wheel", playOnInteraction);
-        };
-        window.addEventListener("click", playOnInteraction, { passive: true });
-        window.addEventListener("touchstart", playOnInteraction, { passive: true });
-        window.addEventListener("wheel", playOnInteraction, { passive: true });
-      });
-      return;
-    }
+    const runFade = () => {
+      const startVolume = audio.volume;
+      const startTime = performance.now();
 
-    const startVolume = audio.volume;
-    const startTime = performance.now();
-
-    const animate = (now: number) => {
-      const elapsed = now - startTime;
-      const progress = Math.min(elapsed / durationMs, 1);
-      audio.volume = startVolume + (targetVolume - startVolume) * progress;
-      if (progress < 1) {
-        requestAnimationFrame(animate);
-      } else if (targetVolume === 0) {
-        audio.pause();
-      }
+      const animate = (now: number) => {
+        const elapsed = now - startTime;
+        const progress = Math.min(elapsed / durationMs, 1);
+        audio.volume = startVolume + (targetVolume - startVolume) * progress;
+        if (progress < 1) {
+          requestAnimationFrame(animate);
+        } else if (targetVolume === 0) {
+          audio.pause();
+        }
+      };
+      requestAnimationFrame(animate);
     };
-    requestAnimationFrame(animate);
+
+    if (targetVolume > 0 && audio.paused) {
+      audio.play()
+        .then(() => {
+          runFade();
+        })
+        .catch(() => {
+          // Autoplay fallback: wait for user interaction to trigger play and fade
+          const playOnInteraction = () => {
+            audio.play()
+              .then(() => {
+                setSoundOn(true);
+                runFade();
+              })
+              .catch(() => undefined);
+            cleanup();
+          };
+
+          const cleanup = () => {
+            window.removeEventListener("click", playOnInteraction);
+            window.removeEventListener("mousedown", playOnInteraction);
+            window.removeEventListener("touchstart", playOnInteraction);
+            window.removeEventListener("keydown", playOnInteraction);
+            window.removeEventListener("pointerdown", playOnInteraction);
+          };
+
+          window.addEventListener("click", playOnInteraction, { passive: true });
+          window.addEventListener("mousedown", playOnInteraction, { passive: true });
+          window.addEventListener("touchstart", playOnInteraction, { passive: true });
+          window.addEventListener("keydown", playOnInteraction, { passive: true });
+          window.addEventListener("pointerdown", playOnInteraction, { passive: true });
+        });
+    } else {
+      runFade();
+    }
   }, []);
 
   // Entrance transition to the landing page (BGM slowly rises)
