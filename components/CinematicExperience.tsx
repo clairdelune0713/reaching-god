@@ -198,6 +198,12 @@ export default function CinematicExperience() {
     setIsEntered(true);
     document.body.classList.remove("loading-locked");
 
+    // Force scroll to top on enter to override browser scroll restoration jumps
+    window.scrollTo(0, 0);
+    requestAnimationFrame(() => {
+      window.scrollTo(0, 0);
+    });
+
     fadeAudio(0.04, 2000); // 2s celestial slow fade in
     setSoundOn(true);
 
@@ -236,6 +242,14 @@ export default function CinematicExperience() {
     return () => {
       audio.pause();
     };
+  }, []);
+
+  // Configure browser scroll behavior and reset on mount
+  useEffect(() => {
+    if ("scrollRestoration" in window.history) {
+      window.history.scrollRestoration = "manual";
+    }
+    window.scrollTo(0, 0);
   }, []);
 
   // Auto-entering passage after loading completes
