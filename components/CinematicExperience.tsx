@@ -114,6 +114,13 @@ export default function CinematicExperience() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [soundOn, setSoundOn] = useState(false);
 
+  // Preloading & Buffering States
+  const [heroBgLoaded, setHeroBgLoaded] = useState(false);
+  const [videosLoaded, setVideosLoaded] = useState<boolean[]>([false, false, false, false, false]);
+  const [isEntered, setIsEntered] = useState(false);
+  const [isPreloaded, setIsPreloaded] = useState(false);
+  const [timedOut, setTimedOut] = useState(false);
+
   const smoothIntroRef = useRef(0);
   const targetIntroRef = useRef(0);
   const lerpFrameRef = useRef<number | null>(null);
@@ -121,13 +128,83 @@ export default function CinematicExperience() {
   const lastScrollTimeRef = useRef(0);
   const isTransitioningRef = useRef(false);
   const menuOpenRef = useRef(menuOpen);
+  const isEnteredRef = useRef(isEntered);
+
+  // Compute loading percentage
+  // Hero Background: 15%, Video 1: 25%, Videos 2-5: 15% each
+  const loadingProgress = 
+    (heroBgLoaded ? 15 : 0) +
+    (videosLoaded[0] ? 25 : 0) +
+    (videosLoaded[1] ? 15 : 0) +
+    (videosLoaded[2] ? 15 : 0) +
+    (videosLoaded[3] ? 15 : 0) +
+    (videosLoaded[4] ? 15 : 0);
 
   useEffect(() => {
     menuOpenRef.current = menuOpen;
   }, [menuOpen]);
 
   useEffect(() => {
+    isEnteredRef.current = isEntered;
+  }, [isEntered]);
+
+  // Lock body scroll when preloader is active
+  useEffect(() => {
+    if (!isEntered) {
+      document.body.classList.add("loading-locked");
+    } else {
+      document.body.classList.remove("loading-locked");
+    }
+    return () => {
+      document.body.classList.remove("loading-locked");
+    };
+  }, [isEntered]);
+
+  // Monitor image & video preloading
+  useEffect(() => {
+    const img = new Image();
+    img.src = "/assets/hero-layers/background.png";
+    img.onload = () => setHeroBgLoaded(true);
+    img.onerror = () => setHeroBgLoaded(true);
+
+    const interval = setInterval(() => {
+      videosRef.current.forEach((video, index) => {
+        if (video && video.readyState >= 2) {
+          setVideosLoaded((prev) => {
+            if (prev[index]) return prev;
+            const next = [...prev];
+            next[index] = true;
+            return next;
+          });
+        }
+      });
+    }, 250);
+
+    const timeout = setTimeout(() => {
+      setTimedOut(true);
+    }, 6000); // 6s maximum load time fallback
+
+    return () => {
+      clearInterval(interval);
+      clearTimeout(timeout);
+    };
+  }, []);
+
+  const handleVideoReady = (index: number) => {
+    setVideosLoaded((prev) => {
+      if (prev[index]) return prev;
+      const next = [...prev];
+      next[index] = true;
+      return next;
+    });
+  };
+
+  useEffect(() => {
     const handleWheel = (e: WheelEvent) => {
+      if (!isEnteredRef.current) {
+        e.preventDefault();
+        return;
+      }
       if (menuOpenRef.current) return;
 
       // Prevent native momentum-based scrolling
@@ -168,6 +245,13 @@ export default function CinematicExperience() {
     };
 
     const handleKeyDown = (e: KeyboardEvent) => {
+      if (!isEnteredRef.current) {
+        const keys = ["ArrowDown", "ArrowUp", "PageDown", "PageUp", " ", "Spacebar"];
+        if (keys.includes(e.key)) {
+          e.preventDefault();
+        }
+        return;
+      }
       if (menuOpenRef.current) return;
 
       const keys = ["ArrowDown", "ArrowUp", "PageDown", "PageUp", " ", "Spacebar"];
@@ -217,11 +301,16 @@ export default function CinematicExperience() {
     let touchStartY = 0;
 
     const handleTouchStart = (e: TouchEvent) => {
+      if (!isEnteredRef.current) return;
       if (menuOpenRef.current) return;
       touchStartY = e.touches[0].clientY;
     };
 
     const handleTouchMove = (e: TouchEvent) => {
+      if (!isEnteredRef.current) {
+        e.preventDefault();
+        return;
+      }
       if (menuOpenRef.current) return;
       if (isTransitioningRef.current) {
         e.preventDefault();
@@ -229,6 +318,10 @@ export default function CinematicExperience() {
     };
 
     const handleTouchEnd = (e: TouchEvent) => {
+      if (!isEnteredRef.current) {
+        e.preventDefault();
+        return;
+      }
       if (menuOpenRef.current) return;
 
       const touchEndY = e.changedTouches[0].clientY;
@@ -452,6 +545,28 @@ export default function CinematicExperience() {
     }
   }, [createAmbientRig, soundOn]);
 
+  const handleEnter = useCallback(() => {
+    setIsEntered(true);
+    document.body.classList.remove("loading-locked");
+
+    try {
+      const rig = createAmbientRig();
+      rig.context.resume().then(() => {
+        const now = rig.context.currentTime;
+        rig.master.gain.cancelScheduledValues(now);
+        rig.master.gain.setValueAtTime(0, now);
+        rig.master.gain.linearRampToValueAtTime(1.0, now + 2.0); // gorgeous slow fade-in
+        setSoundOn(true);
+      });
+    } catch {
+      setSoundOn(false);
+    }
+
+    setTimeout(() => {
+      setIsPreloaded(true);
+    }, 1200);
+  }, [createAmbientRig]);
+
   useEffect(() => () => {
     const rig = ambientRef.current;
     if (!rig) return;
@@ -490,6 +605,49 @@ export default function CinematicExperience() {
 
   return (
     <div className="cinematic-root" ref={rootRef}>
+      {!isPreloaded && (
+        <div className={`preloader-overlay ${isEntered ? "is-fading" : ""}`}>
+          <div className="preloader-content">
+            <h2 className="preloader-title">
+              <span>The</span>
+              <span>Synthetic</span>
+              <span><em>Muse</em></span>
+            </h2>
+            <p className="preloader-subtitle">AIFX Editions · Vol. 01</p>
+            
+            <div className="preloader-progress-container">
+              <svg className="progress-circle" viewBox="0 0 100 100">
+                <circle className="progress-circle-bg" cx="50" cy="50" r="45" />
+                <circle 
+                  className="progress-circle-bar" 
+                  cx="50" 
+                  cy="50" 
+                  r="45" 
+                  style={{ strokeDasharray: 283, strokeDashoffset: 283 - (283 * Math.min(loadingProgress, timedOut ? 100 : 100)) / 100 }}
+                />
+              </svg>
+              <div className="progress-value">
+                {loadingProgress >= 100 || timedOut ? (
+                  <button className="enter-button" type="button" onClick={handleEnter}>
+                    <span>Begin Passage</span>
+                  </button>
+                ) : (
+                  <span>{Math.min(loadingProgress, 99)}%</span>
+                )}
+              </div>
+            </div>
+            
+            <div className="preloader-footer">
+              <p className="preloader-hint">
+                {loadingProgress >= 100 || timedOut ? "Passage is ready" : "Summoning worlds..."}
+              </p>
+              <p className="preloader-audio-hint">Experience with sound for full immersion</p>
+            </div>
+          </div>
+          <div className="preloader-grain" />
+        </div>
+      )}
+
       <a className="skip-link" href="#experience-stage">
         Skip to the films
       </a>
@@ -499,22 +657,47 @@ export default function CinematicExperience() {
           <div className="video-stack" aria-hidden={activeChapter < 0}>
             {chapters.map((chapter, index) => {
               const isActive = index === Math.max(activeChapter, 0);
+              const isLoaded = videosLoaded[index];
               return (
-                <video
-                  key={chapter.title}
-                  ref={(node) => {
-                    videosRef.current[index] = node;
+                <div 
+                  key={chapter.title} 
+                  className="chapter-video-container" 
+                  style={{ 
+                    position: "absolute", 
+                    inset: 0, 
+                    width: "100%", 
+                    height: "100%", 
+                    opacity: isActive ? 1 : 0, 
+                    zIndex: isActive ? 1 : 0, 
+                    pointerEvents: "none" 
                   }}
-                  className="chapter-video"
-                  crossOrigin="anonymous"
-                  src={chapter.video}
-                  style={{ opacity: isActive ? 1 : 0, zIndex: isActive ? 1 : 0 }}
-                  preload={index < 2 ? "auto" : "metadata"}
-                  autoPlay
-                  loop
-                  muted
-                  playsInline
-                />
+                >
+                  <video
+                    ref={(node) => {
+                      videosRef.current[index] = node;
+                    }}
+                    className="chapter-video"
+                    crossOrigin="anonymous"
+                    src={chapter.video}
+                    style={{ 
+                      opacity: isActive && isLoaded ? 1 : 0, 
+                      zIndex: isActive ? 1 : 0,
+                      transition: "opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1)"
+                    }}
+                    preload="auto"
+                    autoPlay
+                    loop
+                    muted
+                    playsInline
+                    onCanPlay={() => handleVideoReady(index)}
+                  />
+                  {isActive && !isLoaded && (
+                    <div className="chapter-video-loader">
+                      <div className="loader-spinner" />
+                      <span>Buffering {chapter.roman}...</span>
+                    </div>
+                  )}
+                </div>
               );
             })}
           </div>
