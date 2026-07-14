@@ -19,12 +19,7 @@ type Chapter = {
   accent: string;
 };
 
-type AmbientRig = {
-  context: AudioContext;
-  master: GainNode;
-  oscillators: OscillatorNode[];
-  lfo: OscillatorNode;
-};
+
 
 const chapters: Chapter[] = [
   {
@@ -107,7 +102,7 @@ const smoothstep = (edge0: number, edge1: number, value: number) => {
 export default function CinematicExperience() {
   const rootRef = useRef<HTMLDivElement>(null);
   const videosRef = useRef<Array<HTMLVideoElement | null>>([]);
-  const ambientRef = useRef<AmbientRig | null>(null);
+  const bgmRef = useRef<HTMLAudioElement | null>(null);
   const frameRef = useRef(0);
   const [scrollProgress, setScrollProgress] = useState(0);
   const [activeChapter, setActiveChapter] = useState(-1);
@@ -140,6 +135,58 @@ export default function CinematicExperience() {
     (videosLoaded[3] ? 15 : 0) +
     (videosLoaded[4] ? 15 : 0);
 
+  // Audio Fade Utility for bgm.mp3
+  const fadeAudio = useCallback((targetVolume: number, durationMs: number) => {
+    const audio = bgmRef.current;
+    if (!audio) return;
+
+    if (targetVolume > 0 && audio.paused) {
+      audio.play().catch(() => {
+        // Safe Autoplay Fallback: Register a one-time gesture listener on any interaction
+        const playOnInteraction = () => {
+          audio.play().then(() => {
+            fadeAudio(targetVolume, durationMs);
+          }).catch(() => undefined);
+          window.removeEventListener("click", playOnInteraction);
+          window.removeEventListener("touchstart", playOnInteraction);
+          window.removeEventListener("wheel", playOnInteraction);
+        };
+        window.addEventListener("click", playOnInteraction, { passive: true });
+        window.addEventListener("touchstart", playOnInteraction, { passive: true });
+        window.addEventListener("wheel", playOnInteraction, { passive: true });
+      });
+      return;
+    }
+
+    const startVolume = audio.volume;
+    const startTime = performance.now();
+
+    const animate = (now: number) => {
+      const elapsed = now - startTime;
+      const progress = Math.min(elapsed / durationMs, 1);
+      audio.volume = startVolume + (targetVolume - startVolume) * progress;
+      if (progress < 1) {
+        requestAnimationFrame(animate);
+      } else if (targetVolume === 0) {
+        audio.pause();
+      }
+    };
+    requestAnimationFrame(animate);
+  }, []);
+
+  // Entrance transition to the landing page (BGM slowly rises)
+  const handleEnter = useCallback(() => {
+    setIsEntered(true);
+    document.body.classList.remove("loading-locked");
+
+    fadeAudio(0.5, 2000); // 2s celestial slow fade in
+    setSoundOn(true);
+
+    setTimeout(() => {
+      setIsPreloaded(true);
+    }, 1800); // Match globals.css preloader-overlay fade transition
+  }, [fadeAudio]);
+
   useEffect(() => {
     menuOpenRef.current = menuOpen;
   }, [menuOpen]);
@@ -159,6 +206,28 @@ export default function CinematicExperience() {
       document.body.classList.remove("loading-locked");
     };
   }, [isEntered]);
+
+  // Initialize and clean up bgm.mp3
+  useEffect(() => {
+    const audio = new Audio("/assets/bgm.mp3");
+    audio.loop = true;
+    audio.volume = 0;
+    bgmRef.current = audio;
+
+    return () => {
+      audio.pause();
+    };
+  }, []);
+
+  // Auto-entering passage after loading completes
+  useEffect(() => {
+    if ((loadingProgress >= 100 || timedOut) && !isEntered) {
+      const delayTimer = setTimeout(() => {
+        handleEnter();
+      }, 1000); // 1s delay at 100% for visual breathing room
+      return () => clearTimeout(delayTimer);
+    }
+  }, [loadingProgress, timedOut, isEntered, handleEnter]);
 
   // Monitor image & video preloading
   useEffect(() => {
@@ -476,104 +545,16 @@ export default function CinematicExperience() {
     });
   }, [activeChapter]);
 
-  const createAmbientRig = useCallback(() => {
-    if (ambientRef.current) return ambientRef.current;
-
-    const context = new AudioContext();
-    const master = context.createGain();
-    const filter = context.createBiquadFilter();
-    const lfo = context.createOscillator();
-    const lfoDepth = context.createGain();
-    const oscillators: OscillatorNode[] = [];
-
-    master.gain.value = 0;
-    filter.type = "lowpass";
-    filter.frequency.value = 420;
-    filter.Q.value = 0.7;
-    lfo.type = "sine";
-    lfo.frequency.value = 0.055;
-    lfoDepth.gain.value = 45;
-    lfo.connect(lfoDepth);
-    lfoDepth.connect(filter.frequency);
-
-    [55, 82.41, 110, 164.81].forEach((frequency, index) => {
-      const oscillator = context.createOscillator();
-      const voice = context.createGain();
-      oscillator.type = index < 2 ? "sine" : "triangle";
-      oscillator.frequency.value = frequency;
-      oscillator.detune.value = index % 2 ? 4 : -4;
-      voice.gain.value = [0.34, 0.18, 0.07, 0.035][index];
-      oscillator.connect(voice);
-      voice.connect(filter);
-      oscillator.start();
-      oscillators.push(oscillator);
-    });
-
-    filter.connect(master);
-    master.connect(context.destination);
-    lfo.start();
-
-    const rig = { context, master, oscillators, lfo };
-    ambientRef.current = rig;
-    return rig;
-  }, []);
-
-  const toggleAmbience = useCallback(async () => {
+  const toggleAmbience = useCallback(() => {
     const enable = !soundOn;
-    if (!enable) {
-      const rig = ambientRef.current;
-      if (rig) {
-        const now = rig.context.currentTime;
-        rig.master.gain.cancelScheduledValues(now);
-        rig.master.gain.setValueAtTime(rig.master.gain.value, now);
-        rig.master.gain.linearRampToValueAtTime(0, now + 0.45);
-      }
-      setSoundOn(false);
-      return;
-    }
-
-    try {
-      const rig = createAmbientRig();
-      await rig.context.resume();
-      const now = rig.context.currentTime;
-      rig.master.gain.cancelScheduledValues(now);
-      rig.master.gain.setValueAtTime(rig.master.gain.value, now);
-      rig.master.gain.linearRampToValueAtTime(1.0, now + 1.4);
+    if (enable) {
+      fadeAudio(0.5, 1400);
       setSoundOn(true);
-    } catch {
+    } else {
+      fadeAudio(0, 500);
       setSoundOn(false);
     }
-  }, [createAmbientRig, soundOn]);
-
-  const handleEnter = useCallback(() => {
-    setIsEntered(true);
-    document.body.classList.remove("loading-locked");
-
-    try {
-      const rig = createAmbientRig();
-      rig.context.resume().then(() => {
-        const now = rig.context.currentTime;
-        rig.master.gain.cancelScheduledValues(now);
-        rig.master.gain.setValueAtTime(0, now);
-        rig.master.gain.linearRampToValueAtTime(1.0, now + 2.0); // gorgeous slow fade-in
-        setSoundOn(true);
-      });
-    } catch {
-      setSoundOn(false);
-    }
-
-    setTimeout(() => {
-      setIsPreloaded(true);
-    }, 1200);
-  }, [createAmbientRig]);
-
-  useEffect(() => () => {
-    const rig = ambientRef.current;
-    if (!rig) return;
-    rig.oscillators.forEach((oscillator) => oscillator.stop());
-    rig.lfo.stop();
-    rig.context.close().catch(() => undefined);
-  }, []);
+  }, [soundOn, fadeAudio]);
 
   useEffect(() => {
     document.body.classList.toggle("menu-is-open", menuOpen);
@@ -607,6 +588,7 @@ export default function CinematicExperience() {
     <div className="cinematic-root" ref={rootRef}>
       {!isPreloaded && (
         <div className={`preloader-overlay ${isEntered ? "is-fading" : ""}`}>
+          <div className="preloader-halo" />
           <div className="preloader-content">
             <h2 className="preloader-title">
               <span>The</span>
@@ -623,26 +605,17 @@ export default function CinematicExperience() {
                   cx="50" 
                   cy="50" 
                   r="45" 
-                  style={{ strokeDasharray: 283, strokeDashoffset: 283 - (283 * Math.min(loadingProgress, timedOut ? 100 : 100)) / 100 }}
+                  style={{ strokeDasharray: 283, strokeDashoffset: 283 - (283 * Math.min(loadingProgress, 100)) / 100 }}
                 />
               </svg>
               <div className="progress-value">
-                {loadingProgress >= 100 || timedOut ? (
-                  <button className="enter-button" type="button" onClick={handleEnter}>
-                    <span>Begin Passage</span>
-                  </button>
-                ) : (
-                  <span>{Math.min(loadingProgress, 99)}%</span>
-                )}
+                <span>{Math.min(loadingProgress, 100)}%</span>
               </div>
             </div>
             
-            <div className="preloader-footer">
-              <p className="preloader-hint">
-                {loadingProgress >= 100 || timedOut ? "Passage is ready" : "Summoning worlds..."}
-              </p>
-              <p className="preloader-audio-hint">Experience with sound for full immersion</p>
-            </div>
+            <p className="preloader-hint">
+              {loadingProgress >= 100 || timedOut ? "Opening passage..." : "Summoning worlds..."}
+            </p>
           </div>
           <div className="preloader-grain" />
         </div>

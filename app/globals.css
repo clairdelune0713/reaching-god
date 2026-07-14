@@ -1124,20 +1124,39 @@ body.loading-locked {
   inset: 0;
   width: 100%;
   height: 100%;
-  background: var(--ink);
+  background: radial-gradient(circle at 50% 50%, rgba(13, 17, 26, 1) 0%, #05080d 100%);
   z-index: 9999;
   display: flex;
   align-items: center;
   justify-content: center;
   opacity: 1;
-  transition: opacity 1s cubic-bezier(0.16, 1, 0.3, 1), transform 1.2s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: opacity 1.8s cubic-bezier(0.25, 1, 0.5, 1), transform 1.8s cubic-bezier(0.25, 1, 0.5, 1);
   will-change: opacity, transform;
 }
 
 .preloader-overlay.is-fading {
   opacity: 0;
   pointer-events: none;
-  transform: scale(1.05);
+  transform: scale(1.02) translateY(-2%); /* Ethereal float upwards and disappear */
+}
+
+/* Celestial Halo behind the content */
+.preloader-halo {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 500px;
+  height: 500px;
+  background: radial-gradient(circle, rgba(223, 178, 101, 0.05) 0%, rgba(243, 239, 229, 0.015) 40%, transparent 70%);
+  filter: blur(40px);
+  pointer-events: none;
+  animation: halo-breathing 8s ease-in-out infinite alternate;
+}
+
+@keyframes halo-breathing {
+  0% { transform: translate(-50%, -50%) scale(0.95); opacity: 0.6; }
+  100% { transform: translate(-50%, -50%) scale(1.05); opacity: 1; }
 }
 
 .preloader-content {
@@ -1147,21 +1166,46 @@ body.loading-locked {
   flex-direction: column;
   align-items: center;
   text-align: center;
-  max-width: 480px;
+  max-width: 540px;
   width: 100%;
-  padding: 20px;
+  padding: 40px;
 }
 
 .preloader-title {
   display: flex;
   flex-direction: column;
   font-family: "Playfair Display", serif;
-  font-size: 32px;
-  line-height: 1.15;
-  letter-spacing: 0.12em;
+  font-size: 38px;
+  font-weight: 300;
+  line-height: 1.25;
+  letter-spacing: 0.18em;
   text-transform: uppercase;
   color: var(--ivory);
-  margin: 0 0 10px 0;
+  margin: 0 0 12px 0;
+  text-shadow: 0 0 30px rgba(243, 239, 229, 0.15);
+}
+
+.preloader-title span {
+  display: inline-block;
+  opacity: 0;
+  animation: angel-text-reveal 1.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.preloader-title span:nth-child(1) { animation-delay: 0.1s; }
+.preloader-title span:nth-child(2) { animation-delay: 0.4s; }
+.preloader-title span:nth-child(3) { animation-delay: 0.7s; }
+
+@keyframes angel-text-reveal {
+  from {
+    opacity: 0;
+    transform: translateY(12px) scale(0.98);
+    filter: blur(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    filter: blur(0);
+  }
 }
 
 .preloader-title em {
@@ -1169,26 +1213,39 @@ body.loading-locked {
   font-style: italic;
   font-weight: 300;
   text-transform: lowercase;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.08em;
+  color: #ebd1ab;
+  text-shadow: 0 0 40px rgba(235, 209, 171, 0.25);
 }
 
 .preloader-subtitle {
   font-family: "Montserrat", sans-serif;
   font-size: 10px;
-  letter-spacing: 0.3em;
+  letter-spacing: 0.4em;
   text-transform: uppercase;
-  color: var(--accent);
-  margin: 0 0 50px 0;
+  color: rgba(243, 239, 229, 0.35);
+  margin: 0 0 60px 0;
+  opacity: 0;
+  animation: fade-in-delayed 1.2s ease forwards;
+  animation-delay: 1s;
 }
 
+@keyframes fade-in-delayed {
+  to { opacity: 1; }
+}
+
+/* Ethereal Halo circular progress bar */
 .preloader-progress-container {
   position: relative;
-  width: 130px;
-  height: 130px;
+  width: 140px;
+  height: 140px;
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-bottom: 50px;
+  margin-bottom: 60px;
+  opacity: 0;
+  animation: fade-in-delayed 1.2s ease forwards;
+  animation-delay: 0.5s;
 }
 
 .progress-circle {
@@ -1199,16 +1256,17 @@ body.loading-locked {
 
 .progress-circle-bg {
   fill: none;
-  stroke: rgba(243, 239, 229, 0.06);
-  stroke-width: 2px;
+  stroke: rgba(243, 239, 229, 0.03);
+  stroke-width: 0.75px; /* Extremely thin hairline */
 }
 
 .progress-circle-bar {
   fill: none;
-  stroke: var(--accent);
-  stroke-width: 2px;
+  stroke: #dfb265;
+  stroke-width: 1px; /* Very delicate gold thread */
   stroke-linecap: round;
-  transition: stroke-dashoffset 0.3s ease;
+  filter: drop-shadow(0 0 3px rgba(223, 178, 101, 0.4));
+  transition: stroke-dashoffset 0.6s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .progress-value {
@@ -1218,90 +1276,28 @@ body.loading-locked {
   align-items: center;
   justify-content: center;
   font-family: "Inter", sans-serif;
-  font-size: 14px;
-  font-weight: 400;
-  color: var(--ivory);
-  letter-spacing: 0.05em;
-}
-
-.enter-button {
-  background: none;
-  border: none;
-  padding: 0;
-  cursor: pointer;
-  width: 100%;
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  animation: enter-fade-in 0.8s var(--ease-out) forwards;
-}
-
-@keyframes enter-fade-in {
-  from {
-    opacity: 0;
-    transform: scale(0.9);
-  }
-  to {
-    opacity: 1;
-    transform: scale(1);
-  }
-}
-
-.enter-button span {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 110px;
-  height: 110px;
-  border-radius: 50%;
-  border: 1px solid var(--accent);
-  font-family: "Inter", sans-serif;
   font-size: 11px;
-  font-weight: 500;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
+  font-weight: 300;
   color: var(--accent);
-  background: rgba(197, 108, 86, 0.03);
-  box-shadow: 0 0 20px rgba(197, 108, 86, 0.04);
-  transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-.enter-button:hover span {
-  background: var(--accent);
-  color: var(--ink);
-  transform: scale(1.06);
-  box-shadow: 0 0 30px rgba(223, 178, 101, 0.3);
-  border-color: var(--accent);
-}
-
-.preloader-footer {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
+  letter-spacing: 0.15em;
+  text-indent: 0.15em; /* Perfectly centers tracked text */
 }
 
 .preloader-hint {
   font-family: "Inter", sans-serif;
   font-size: 11px;
-  letter-spacing: 0.05em;
+  font-weight: 300;
+  letter-spacing: 0.1em;
   color: var(--muted);
   margin: 0;
-  animation: pulse-text 2s ease infinite;
+  opacity: 0;
+  animation: pulse-text-ethereal 3s ease-in-out infinite alternate;
+  animation-delay: 1.2s;
 }
 
-@keyframes pulse-text {
-  0%, 100% { opacity: 0.6; }
-  50% { opacity: 1; }
-}
-
-.preloader-audio-hint {
-  font-family: "Inter", sans-serif;
-  font-size: 9px;
-  letter-spacing: 0.08em;
-  color: rgba(243, 239, 229, 0.3);
-  text-transform: uppercase;
-  margin: 0;
+@keyframes pulse-text-ethereal {
+  0% { opacity: 0.4; letter-spacing: 0.1em; }
+  100% { opacity: 0.8; letter-spacing: 0.12em; }
 }
 
 .preloader-grain {
