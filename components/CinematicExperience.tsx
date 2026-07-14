@@ -118,6 +118,171 @@ export default function CinematicExperience() {
   const targetIntroRef = useRef(0);
   const lerpFrameRef = useRef<number | null>(null);
 
+  const lastScrollTimeRef = useRef(0);
+  const isTransitioningRef = useRef(false);
+  const menuOpenRef = useRef(menuOpen);
+
+  useEffect(() => {
+    menuOpenRef.current = menuOpen;
+  }, [menuOpen]);
+
+  useEffect(() => {
+    const handleWheel = (e: WheelEvent) => {
+      if (menuOpenRef.current) return;
+
+      // Prevent native momentum-based scrolling
+      e.preventDefault();
+
+      const now = Date.now();
+      // Swallow events during active transitions and momentum cooldown
+      if (isTransitioningRef.current || now - lastScrollTimeRef.current < 800) {
+        return;
+      }
+
+      // Ignore small jitter / low-magnitude wheel movements
+      if (Math.abs(e.deltaY) < 10) return;
+
+      const viewport = Math.max(window.innerHeight, 1);
+      const currentPage = Math.round(window.scrollY / viewport);
+
+      let targetPage = currentPage;
+      if (e.deltaY > 0) {
+        targetPage = Math.min(currentPage + 1, 5);
+      } else if (e.deltaY < 0) {
+        targetPage = Math.max(currentPage - 1, 0);
+      }
+
+      if (targetPage !== currentPage) {
+        isTransitioningRef.current = true;
+        lastScrollTimeRef.current = now;
+
+        window.scrollTo({
+          top: targetPage * viewport,
+          behavior: "smooth",
+        });
+
+        setTimeout(() => {
+          isTransitioningRef.current = false;
+        }, 800);
+      }
+    };
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (menuOpenRef.current) return;
+
+      const keys = ["ArrowDown", "ArrowUp", "PageDown", "PageUp", " ", "Spacebar"];
+      if (!keys.includes(e.key)) return;
+
+      const target = e.target as HTMLElement;
+      if (
+        target.tagName === "INPUT" ||
+        target.tagName === "TEXTAREA" ||
+        target.isContentEditable
+      ) {
+        return;
+      }
+
+      e.preventDefault();
+
+      const now = Date.now();
+      if (isTransitioningRef.current || now - lastScrollTimeRef.current < 800) {
+        return;
+      }
+
+      const viewport = Math.max(window.innerHeight, 1);
+      const currentPage = Math.round(window.scrollY / viewport);
+
+      let targetPage = currentPage;
+      if (e.key === "ArrowDown" || e.key === "PageDown" || (e.key === " " && !e.shiftKey)) {
+        targetPage = Math.min(currentPage + 1, 5);
+      } else if (e.key === "ArrowUp" || e.key === "PageUp" || (e.key === " " && e.shiftKey)) {
+        targetPage = Math.max(currentPage - 1, 0);
+      }
+
+      if (targetPage !== currentPage) {
+        isTransitioningRef.current = true;
+        lastScrollTimeRef.current = now;
+
+        window.scrollTo({
+          top: targetPage * viewport,
+          behavior: "smooth",
+        });
+
+        setTimeout(() => {
+          isTransitioningRef.current = false;
+        }, 800);
+      }
+    };
+
+    let touchStartY = 0;
+
+    const handleTouchStart = (e: TouchEvent) => {
+      if (menuOpenRef.current) return;
+      touchStartY = e.touches[0].clientY;
+    };
+
+    const handleTouchMove = (e: TouchEvent) => {
+      if (menuOpenRef.current) return;
+      if (isTransitioningRef.current) {
+        e.preventDefault();
+      }
+    };
+
+    const handleTouchEnd = (e: TouchEvent) => {
+      if (menuOpenRef.current) return;
+
+      const touchEndY = e.changedTouches[0].clientY;
+      const deltaY = touchStartY - touchEndY;
+
+      // Minimum swipe distance threshold of 50px
+      if (Math.abs(deltaY) < 50) return;
+
+      const now = Date.now();
+      if (isTransitioningRef.current || now - lastScrollTimeRef.current < 800) {
+        return;
+      }
+
+      const viewport = Math.max(window.innerHeight, 1);
+      const currentPage = Math.round(window.scrollY / viewport);
+
+      let targetPage = currentPage;
+      if (deltaY > 0) {
+        targetPage = Math.min(currentPage + 1, 5);
+      } else if (deltaY < 0) {
+        targetPage = Math.max(currentPage - 1, 0);
+      }
+
+      if (targetPage !== currentPage) {
+        e.preventDefault();
+        isTransitioningRef.current = true;
+        lastScrollTimeRef.current = now;
+
+        window.scrollTo({
+          top: targetPage * viewport,
+          behavior: "smooth",
+        });
+
+        setTimeout(() => {
+          isTransitioningRef.current = false;
+        }, 800);
+      }
+    };
+
+    window.addEventListener("wheel", handleWheel, { passive: false });
+    window.addEventListener("keydown", handleKeyDown);
+    window.addEventListener("touchstart", handleTouchStart, { passive: true });
+    window.addEventListener("touchmove", handleTouchMove, { passive: false });
+    window.addEventListener("touchend", handleTouchEnd, { passive: false });
+
+    return () => {
+      window.removeEventListener("wheel", handleWheel);
+      window.removeEventListener("keydown", handleKeyDown);
+      window.removeEventListener("touchstart", handleTouchStart);
+      window.removeEventListener("touchmove", handleTouchMove);
+      window.removeEventListener("touchend", handleTouchEnd);
+    };
+  }, []);
+
   const active = chapters[Math.max(activeChapter, 0)];
 
   const animateIntro = useCallback(() => {
@@ -280,7 +445,7 @@ export default function CinematicExperience() {
       const now = rig.context.currentTime;
       rig.master.gain.cancelScheduledValues(now);
       rig.master.gain.setValueAtTime(rig.master.gain.value, now);
-      rig.master.gain.linearRampToValueAtTime(0.075, now + 1.4);
+      rig.master.gain.linearRampToValueAtTime(1.0, now + 1.4);
       setSoundOn(true);
     } catch {
       setSoundOn(false);
