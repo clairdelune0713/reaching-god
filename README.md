@@ -20,7 +20,7 @@ The experience is structured as an interactive scroll-scrubbed passage consistin
 To achieve premium, lag-free performance at 60 frames per second, the visual atmosphere and core animations are entirely offloaded to the GPU via three specialized `<canvas>` components powered by raw WebGL (GLSL) vertex and fragment shaders.
 
 ### 1. `WebGLAtmosphere` (Celestial Ambient Space)
-* **File Location**: [WebGLAtmosphere.tsx](file:///Users/henry/Downloads/oc-project/reaching-god/components/WebGLAtmosphere.tsx)
+* **File Location**: [WebGLAtmosphere.tsx](./components/WebGLAtmosphere.tsx)
 * **Purpose**: Generates a responsive, atmospheric backdrop that feels alive and reacts to user input.
 * **Technical Details**:
   * **Coordinate Translation**: Employs a vertex shader mapping clip space coordinates directly into normalized UV coordinate space `v_uv = (a_position + 1.0) * 0.5`.
@@ -30,7 +30,7 @@ To achieve premium, lag-free performance at 60 frames per second, the visual atm
   * **Scroll scrubbing**: The entire shader shifts from inactive to an operational state based on a custom `u_progress` uniform, fading elements out dynamically during chapter exploration.
 
 ### 2. `VideoWipeCanvas` (Diagonal Chapter Transitions)
-* **File Location**: [VideoWipeCanvas.tsx](file:///Users/henry/Downloads/oc-project/reaching-god/components/VideoWipeCanvas.tsx)
+* **File Location**: [VideoWipeCanvas.tsx](./components/VideoWipeCanvas.tsx)
 * **Purpose**: Performs real-time, hardware-accelerated transitions between full-screen videos with high-fidelity visual effects.
 * **Technical Details**:
   * **Aspect-Correct Sampling (`coverUv`)**: Computes texture matrices dynamically to replicate the CSS `background-size: cover` behavior in GLSL, preventing visual stretching of video layers regardless of the viewport aspect ratio.
@@ -41,7 +41,7 @@ To achieve premium, lag-free performance at 60 frames per second, the visual atm
   * **Visual Feedback**: Applies a subtle zoom/depth expansion scaling factor `1.0 + sin(u_local * pi) * 0.022` on transition activation to mimic cinematic lens expansions.
 
 ### 3. `CharacterMotionCanvas` (GPU Mesh Deformations & Grayscale Etching)
-* **File Location**: [CharacterMotionCanvas.tsx](file:///Users/henry/Downloads/oc-project/reaching-god/components/CharacterMotionCanvas.tsx)
+* **File Location**: [CharacterMotionCanvas.tsx](./components/CharacterMotionCanvas.tsx)
 * **Purpose**: Animates the layers of the Renaissance illustration through structural mesh deformations and transforms them into an authentic etched drawing.
 * **Technical Details**:
   * **Mesh Generation**: Dynamically compiles a structural $72 \times 40$ vertex grid on the CPU during mount, which is uploaded to WebGL buffers (`ELEMENT_ARRAY_BUFFER` and `ARRAY_BUFFER`) for localized vertex displacement.
@@ -139,5 +139,5 @@ Proprietary and Commercial License. Copyright © 2026 **OneCool AIFX**. All Righ
 
 Primary Developer & Sole Contributor: **Henry Meng**
 
-This project is exclusive proprietary software. No unauthorized reproduction, copying, distribution, or modifications are permitted. For commercial licensing inquiries or permissions, please refer to the [LICENSE](file:///Users/henry/Downloads/oc-project/reaching-god/LICENSE) file.
+This project is exclusive proprietary software. No unauthorized reproduction, copying, distribution, or modifications are permitted. For commercial licensing inquiries or permissions, please refer to the [LICENSE](./LICENSE) file.
 
