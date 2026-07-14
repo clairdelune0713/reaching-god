@@ -129,6 +129,15 @@ npm run build
 
 ## 🤝 Special Thanks
 
-Special thanks to **Zooey Chan** ([czq030710@gmail.com](mailto:czq030710@gmail.com)) for his contributions to this showcase.
+Special thanks to **Zooey Chan** ([czq030710@gmail.com](mailto:czq030710@gmail.com)) for their contributions to this showcase.
 
+---
+
+## 📄 License
+
+Proprietary and Commercial License. Copyright © 2026 **OneCool AIFX**. All Rights Reserved.
+
+Primary Developer & Sole Contributor: **Henry Meng**
+
+This project is exclusive proprietary software. No unauthorized reproduction, copying, distribution, or modifications are permitted. For commercial licensing inquiries or permissions, please refer to the [LICENSE](file:///Users/henry/Downloads/oc-project/reaching-god/LICENSE) file.
 
