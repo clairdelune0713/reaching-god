@@ -114,23 +114,39 @@ export default function CinematicExperience() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [soundOn, setSoundOn] = useState(false);
 
+  const smoothIntroRef = useRef(0);
+  const targetIntroRef = useRef(0);
+  const lerpFrameRef = useRef<number | null>(null);
+
   const active = chapters[Math.max(activeChapter, 0)];
 
-  const updateScroll = useCallback(() => {
-    frameRef.current = 0;
+  const animateIntro = useCallback(() => {
+    const target = targetIntroRef.current;
+    const current = smoothIntroRef.current;
+    const diff = target - current;
+
+    if (Math.abs(diff) < 0.0001) {
+      smoothIntroRef.current = target;
+      if (lerpFrameRef.current !== null) {
+        cancelAnimationFrame(lerpFrameRef.current);
+        lerpFrameRef.current = null;
+      }
+    } else {
+      smoothIntroRef.current = current + diff * 0.035; // Luxurious, slower, and incredibly smooth transition easing
+      lerpFrameRef.current = requestAnimationFrame(animateIntro);
+    }
+
+    const smoothIntro = smoothIntroRef.current;
     const root = rootRef.current;
     if (!root) return;
-    const viewport = Math.max(window.innerHeight, 1);
-    const raw = clamp(window.scrollY / viewport, 0, chapters.length);
-    const intro = clamp(raw, 0, 1);
-    const collapse = smoothstep(0.08, 0.43, intro);
-    const etch = smoothstep(0.40, 0.61, intro) * (1 - smoothstep(0.73, 0.93, intro));
-    const reveal = smoothstep(0.63, 0.96, intro);
-    const copyReveal = smoothstep(0.80, 1, intro);
-    const heroOpacity = 1 - smoothstep(0.62, 0.94, intro);
-    const nextActive = raw < 0.64 ? -1 : clamp(Math.round(raw) - 1, 0, chapters.length - 1);
 
-    root.style.setProperty("--intro", intro.toFixed(4));
+    const collapse = smoothstep(0.08, 0.43, smoothIntro);
+    const etch = smoothstep(0.40, 0.61, smoothIntro) * (1 - smoothstep(0.73, 0.93, smoothIntro));
+    const reveal = smoothstep(0.63, 0.96, smoothIntro);
+    const copyReveal = smoothstep(0.80, 1, smoothIntro);
+    const heroOpacity = 1 - smoothstep(0.62, 0.94, smoothIntro);
+
+    root.style.setProperty("--intro", smoothIntro.toFixed(4));
     root.style.setProperty("--collapse", collapse.toFixed(4));
     root.style.setProperty("--etch", etch.toFixed(4));
     root.style.setProperty("--reveal", reveal.toFixed(4));
@@ -146,10 +162,31 @@ export default function CinematicExperience() {
     root.style.setProperty("--index-offset", `${((1 - collapse) * 30).toFixed(2)}px`);
     root.style.setProperty("--frame-scale", (1 - collapse / 22).toFixed(4));
     root.style.setProperty("--frame-blur", `${(collapse * 8).toFixed(2)}px`);
-    root.style.setProperty("--accent", chapters[Math.max(nextActive, 0)].accent);
-    setScrollProgress(raw);
-    setActiveChapter((current) => (current === nextActive ? current : nextActive));
+
+    setScrollProgress(smoothIntro);
   }, []);
+
+  const updateScroll = useCallback(() => {
+    frameRef.current = 0;
+    const root = rootRef.current;
+    if (!root) return;
+    const viewport = Math.max(window.innerHeight, 1);
+    const raw = clamp(window.scrollY / viewport, 0, chapters.length);
+    const intro = clamp(raw, 0, 1);
+
+    targetIntroRef.current = intro;
+    if (lerpFrameRef.current === null) {
+      lerpFrameRef.current = requestAnimationFrame(animateIntro);
+    }
+
+    // Determine active chapter: 
+    // Use raw for immediate swipe trigger, but if raw < 1, let activeChapter follow smoothIntro so it fades out slowly when scrolling up
+    const effectiveIntro = raw < 1 ? smoothIntroRef.current : raw;
+    const nextActive = effectiveIntro < 0.64 ? -1 : clamp(Math.round(raw) - 1, 0, chapters.length - 1);
+
+    root.style.setProperty("--accent", chapters[Math.max(nextActive, 0)].accent);
+    setActiveChapter((current) => (current === nextActive ? current : nextActive));
+  }, [animateIntro]);
 
   useEffect(() => {
     const requestUpdate = () => {
@@ -160,6 +197,7 @@ export default function CinematicExperience() {
     window.addEventListener("resize", requestUpdate, { passive: true });
     return () => {
       if (frameRef.current) cancelAnimationFrame(frameRef.current);
+      if (lerpFrameRef.current !== null) cancelAnimationFrame(lerpFrameRef.current);
       window.removeEventListener("scroll", requestUpdate);
       window.removeEventListener("resize", requestUpdate);
     };
@@ -411,7 +449,7 @@ export default function CinematicExperience() {
                     <span className="word-wrap">
                       {word.split("").map((character, characterIndex) => (
                         <span className="char-wrap" key={`${character}-${characterIndex}`}>
-                          <span className="char" style={{ animationDelay: `${(start + characterIndex) * 0.025}s` }}>
+                          <span className="char" style={{ animationDelay: `${(start + characterIndex) * 0.015}s` }}>
                             {character}
                           </span>
                         </span>

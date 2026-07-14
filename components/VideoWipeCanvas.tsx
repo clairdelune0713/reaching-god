@@ -109,7 +109,7 @@ export default function VideoWipeCanvas({ activeIndex, videosRef }: Props) {
     from: activeIndex,
     to: activeIndex,
     startedAt: -1,
-    duration: 1050,
+    duration: 1400,
   });
 
   useEffect(() => {
@@ -125,7 +125,7 @@ export default function VideoWipeCanvas({ activeIndex, videosRef }: Props) {
       from: dominantFrame,
       to: activeIndex,
       startedAt: dominantFrame === activeIndex ? -1 : 0,
-      duration: reducedMotion ? 1 : 1050,
+      duration: reducedMotion ? 1 : 1400,
     };
   }, [activeIndex]);
 

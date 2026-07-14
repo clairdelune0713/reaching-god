@@ -562,9 +562,9 @@ a:focus-visible {
   filter: blur(18px);
   transform: translate3d(0, 32px, -70px) scale(0.95);
   transition:
-    opacity 820ms var(--ease-out),
-    filter 820ms var(--ease-out),
-    transform 820ms var(--ease-out);
+    opacity 1400ms var(--ease-out),
+    filter 1400ms var(--ease-out),
+    transform 1400ms var(--ease-out);
   pointer-events: none;
 }
 
@@ -586,7 +586,7 @@ a:focus-visible {
 }
 
 .chapter-copy.is-visible .gate-eyebrow-container {
-  animation: element-reveal 720ms var(--ease-out) 80ms forwards;
+  animation: element-reveal 1000ms var(--ease-out) 100ms forwards;
 }
 
 .gate-category {
@@ -642,7 +642,7 @@ a:focus-visible {
 }
 
 .chapter-copy.is-visible .char {
-  animation: char-reveal 1.05s var(--ease-out) forwards;
+  animation: char-reveal 1.2s var(--ease-out) forwards;
 }
 
 .split-text-title .space {
@@ -660,7 +660,7 @@ a:focus-visible {
 }
 
 .chapter-copy.is-visible .gate-client-info {
-  animation: element-reveal 760ms var(--ease-out) 220ms forwards;
+  animation: element-reveal 1000ms var(--ease-out) 250ms forwards;
 }
 
 .gate-client-logo-wrapper {
@@ -705,7 +705,7 @@ a:focus-visible {
 }
 
 .chapter-copy.is-visible .ritual-button {
-  animation: element-reveal 760ms var(--ease-out) 340ms forwards;
+  animation: element-reveal 1000ms var(--ease-out) 350ms forwards;
 }
 
 .ritual-button:hover,
