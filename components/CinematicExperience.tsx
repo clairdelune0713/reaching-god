@@ -132,13 +132,17 @@ export default function CinematicExperience() {
         lerpFrameRef.current = null;
       }
     } else {
-      smoothIntroRef.current = current + diff * 0.035; // Luxurious, slower, and incredibly smooth transition easing
+      // Symmetrical luxurious, slow, and incredibly smooth transition easing for both directions
+      smoothIntroRef.current = current + diff * 0.035;
       lerpFrameRef.current = requestAnimationFrame(animateIntro);
     }
 
     const smoothIntro = smoothIntroRef.current;
     const root = rootRef.current;
     if (!root) return;
+
+    const viewport = Math.max(window.innerHeight, 1);
+    const raw = clamp(window.scrollY / viewport, 0, chapters.length);
 
     const collapse = smoothstep(0.08, 0.43, smoothIntro);
     const etch = smoothstep(0.40, 0.61, smoothIntro) * (1 - smoothstep(0.73, 0.93, smoothIntro));
@@ -163,7 +167,14 @@ export default function CinematicExperience() {
     root.style.setProperty("--frame-scale", (1 - collapse / 22).toFixed(4));
     root.style.setProperty("--frame-blur", `${(collapse * 8).toFixed(2)}px`);
 
+    // Determine active chapter: 
+    // Use raw for immediate swipe trigger, but if raw < 1, let activeChapter follow smoothIntro so it fades out slowly when scrolling up
+    const effectiveIntro = raw < 1 ? smoothIntro : raw;
+    const nextActive = effectiveIntro < 0.64 ? -1 : clamp(Math.round(raw) - 1, 0, chapters.length - 1);
+
+    root.style.setProperty("--accent", chapters[Math.max(nextActive, 0)].accent);
     setScrollProgress(smoothIntro);
+    setActiveChapter((current) => (current === nextActive ? current : nextActive));
   }, []);
 
   const updateScroll = useCallback(() => {
@@ -178,14 +189,6 @@ export default function CinematicExperience() {
     if (lerpFrameRef.current === null) {
       lerpFrameRef.current = requestAnimationFrame(animateIntro);
     }
-
-    // Determine active chapter: 
-    // Use raw for immediate swipe trigger, but if raw < 1, let activeChapter follow smoothIntro so it fades out slowly when scrolling up
-    const effectiveIntro = raw < 1 ? smoothIntroRef.current : raw;
-    const nextActive = effectiveIntro < 0.64 ? -1 : clamp(Math.round(raw) - 1, 0, chapters.length - 1);
-
-    root.style.setProperty("--accent", chapters[Math.max(nextActive, 0)].accent);
-    setActiveChapter((current) => (current === nextActive ? current : nextActive));
   }, [animateIntro]);
 
   useEffect(() => {
@@ -519,7 +522,7 @@ export default function CinematicExperience() {
         </div>
 
         <div className="scroll-spine" aria-hidden="true">
-          {Array.from({ length: 5 }, (_, index) => <div className="snap-point" key={index} />)}
+          {Array.from({ length: 6 }, (_, index) => <div className="snap-point" key={index} />)}
         </div>
       </section>
 

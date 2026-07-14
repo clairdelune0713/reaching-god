@@ -93,6 +93,7 @@ a:focus-visible {
 }
 
 .experience {
+  position: relative;
   min-height: 600svh;
 }
 
@@ -106,7 +107,6 @@ a:focus-visible {
   overflow: hidden;
   background: #060910;
   isolation: isolate;
-  scroll-snap-align: start;
 }
 
 .hero-world,
@@ -915,9 +915,10 @@ a:focus-visible {
 }
 
 .scroll-spine {
-  position: relative;
+  position: absolute;
+  inset: 0;
   z-index: 0;
-  height: 500svh;
+  pointer-events: none;
 }
 
 .snap-point {
