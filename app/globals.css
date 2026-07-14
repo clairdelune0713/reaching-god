@@ -940,12 +940,10 @@ a:focus-visible {
 
 @media (max-width: 900px) {
   .site-header {
-    grid-template-columns: 1fr auto auto;
     gap: 17px;
     padding-inline: 14px;
   }
 
-  .sound-toggle { display: none; }
   .project-link { padding: 9px 13px; }
   .brand-lockup em { display: none; }
   .chapter-index { width: 132px; }
@@ -975,10 +973,15 @@ a:focus-visible {
   html { scroll-snap-type: y mandatory; }
 
   .stage { min-height: 620px; }
-  .site-header { height: 62px; }
-  .brand-lockup { font-size: 11px; }
+  .site-header {
+    height: 62px;
+    grid-template-columns: 1fr auto auto;
+    gap: 12px;
+  }
+  .brand-lockup { order: 1; font-size: 11px; }
+  .sound-toggle { display: inline-flex; order: 2; font-size: 9px; }
+  .index-button { order: 3; }
   .project-link { display: none; }
-  .site-header { grid-template-columns: 1fr auto; }
   .intro-frame { top: 49%; height: min(61vh, 500px); min-height: 410px; }
   .frame-orbit { top: 48px; }
 
@@ -999,6 +1002,12 @@ a:focus-visible {
   .gate-client-logo-wrapper {
     width: 100vw;
     height: 110px;
+  }
+
+  .gate-client-logo {
+    max-width: 90%;
+    height: auto;
+    max-height: 100%;
   }
 
   .ritual-button {

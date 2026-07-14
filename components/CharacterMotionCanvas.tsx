@@ -43,6 +43,8 @@ const vertexSource = `
     float angle = 0.0;
     vec2 translation = vec2(0.0);
 
+    float portraitFactor = min(1.0, 1.06 / u_planeScale.x);
+
     if (u_character < 0.5) {
       // Protect the head, glasses and face from every local deformation.
       float faceProtection = 1.0 - region(a_uv, vec4(0.29, 0.08, 0.60, 0.50), 0.025);
@@ -68,7 +70,7 @@ const vertexSource = `
       vec2 backLegPose = rotateAround(deformed, vec2(0.43, 0.65), 0.043 * counter);
       deformed = mix(deformed, backLegPose, backLeg);
 
-      scale = 0.90;
+      scale = 0.90 * portraitFactor;
       angle = -0.0183 * travel;
       translation = vec2(-0.29 - 0.064 * travel, -0.036 + 0.034 * counter);
     } else {
@@ -92,7 +94,7 @@ const vertexSource = `
       vec2 tailPose = rotateAround(deformed, vec2(0.755, 0.45), -0.058 * reach + 0.022 * tail);
       deformed = mix(deformed, tailPose, tailRegion);
 
-      scale = 0.78;
+      scale = 0.78 * portraitFactor;
       angle = 0.0192 * travel;
       translation = vec2(0.40 + 0.076 * travel, -0.02 - 0.018 * counter);
     }
