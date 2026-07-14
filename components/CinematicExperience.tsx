@@ -38,7 +38,7 @@ const chapters: Chapter[] = [
     statement: "Worlds are no longer found. They are summoned.",
     detail: "Feature-scale spectacle shaped through AI, live action craft and relentless imagination.",
     video:
-      "https://video.henrywithu.com/static/streaming-playlists/hls/896cd5b6-7fa0-4572-82f4-e1db152d551a/c9cfe856-61ee-47cd-b013-5083425c188e-1080-fragmented.mp4",
+      "https://video.henrywithu.com/static/streaming-playlists/hls/81936e4a-302e-4c7c-92b7-70209c4106ef/e80bfa77-256b-4652-a956-9e45f626df73-1080-fragmented.mp4",
     accent: "#c56c56",
   },
   {
@@ -52,7 +52,7 @@ const chapters: Chapter[] = [
     statement: "A campaign can move at the speed of an idea.",
     detail: "Cinematic advertising built to turn a single proposition into a living visual language.",
     video:
-      "https://video.henrywithu.com/static/streaming-playlists/hls/29f2ce85-ad8e-410a-a58d-b3ed37b889f4/7280e8b3-a01b-4fd4-80ac-07728d10d80b-1080-fragmented.mp4",
+      "https://video.henrywithu.com/static/streaming-playlists/hls/cc8dace4-6ae5-463d-b1ad-536169590ae3/de7edff2-b1b4-476e-bb35-6dbb7f15f451-1080-fragmented.mp4",
     accent: "#4f8c86",
   },
   {
@@ -66,7 +66,7 @@ const chapters: Chapter[] = [
     statement: "History returns with a new pulse.",
     detail: "Cultural memory, myth and machine-made atmospheres converge in a cinematic resurrection.",
     video:
-      "https://video.henrywithu.com/static/streaming-playlists/hls/c6be1e61-bfed-4d50-9f21-869564a6d2a6/2a7e0ce2-4d85-4108-b8d0-0962a0df26f2-1080-fragmented.mp4",
+      "https://video.henrywithu.com/static/streaming-playlists/hls/14c99a6e-b317-484e-a106-ca439ce6dfe8/d38d568a-1504-4863-ad82-6dda9c770c4a-1080-fragmented.mp4",
     accent: "#b7a45a",
   },
   {
@@ -80,7 +80,7 @@ const chapters: Chapter[] = [
     statement: "Music becomes architecture for impossible feeling.",
     detail: "A performance world stretched beyond the lens through hybrid production and generative motion.",
     video:
-      "https://video.henrywithu.com/static/streaming-playlists/hls/34c2635f-34a7-4049-a3df-9f5b2dbbe452/ad4c7ee5-80f1-4a50-be62-0e0954a0efb4-1080-fragmented.mp4",
+      "https://video.henrywithu.com/static/streaming-playlists/hls/66e59670-7ef7-4ca5-9f7b-e863175f7f9b/5e49c8cb-b930-4cd0-91d5-4701911bf855-1080-fragmented.mp4",
     accent: "#6d7359",
   },
   {
@@ -94,7 +94,7 @@ const chapters: Chapter[] = [
     statement: "Characters begin as sparks. We give them a universe.",
     detail: "Original IP designed to travel across film, campaigns, collectibles and culture.",
     video:
-      "https://video.henrywithu.com/static/streaming-playlists/hls/5446fe30-dde0-4b0b-bcce-bd03398f17c3/b784d94e-23f5-4cb8-9027-71910bc031b5-1080-fragmented.mp4",
+      "https://video.henrywithu.com/static/streaming-playlists/hls/88efbde4-9eeb-4fa3-9a17-287a778c65c1/1cf3e4d8-cc59-41f1-833c-368b1f2b68ee-1080-fragmented.mp4",
     accent: "#91a7ae",
   },
 ];
