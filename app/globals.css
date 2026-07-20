@@ -1361,3 +1361,40 @@ body.loading-locked {
   text-transform: uppercase;
   color: var(--muted);
 }
+
+/* --- BRAND LOGO REPLACEMENT STYLES --- */
+.preloader-logo-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 0 auto 24px auto;
+  max-width: 170px;
+  width: 100%;
+}
+
+.preloader-logo {
+  width: 100%;
+  height: auto;
+  opacity: 0;
+  animation: angel-text-reveal 1.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  animation-delay: 0.3s;
+}
+
+.intro-heading-container {
+  display: flex;
+  align-items: flex-start;
+  margin-bottom: 24px;
+}
+
+.intro-logo {
+  max-width: 125px;
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.edition-logo {
+  width: clamp(75px, 2vw, 90px);
+  height: auto;
+  display: block;
+}

@@ -623,11 +623,9 @@ export default function CinematicExperience() {
         <div className={`preloader-overlay ${isEntered ? "is-fading" : ""}`}>
           <div className="preloader-halo" />
           <div className="preloader-content">
-            <h2 className="preloader-title">
-              <span>The</span>
-              <span>Synthetic</span>
-              <span><em>Muse</em></span>
-            </h2>
+            <div className="preloader-logo-container">
+              <img className="preloader-logo" src="/assets/logos/onecool-logo.png" alt="One Cool" />
+            </div>
             <p className="preloader-subtitle">AIFX Editions · Vol. 01</p>
             
             <div className="preloader-progress-container">
@@ -750,9 +748,7 @@ export default function CinematicExperience() {
           </header>
 
           <aside className="edition-title" aria-hidden={scrollProgress < 0.18}>
-            <span>The</span>
-            <span>Synthetic</span>
-            <span><em>Muse</em></span>
+            <img className="edition-logo" src="/assets/logos/onecool-logo.png" alt="One Cool" />
           </aside>
 
           <aside className="chapter-index" aria-label="Film navigation">
@@ -774,10 +770,8 @@ export default function CinematicExperience() {
 
           <div className="intro-frame">
             <div className="frame-orbit" aria-hidden="true"><i /><i /><i /></div>
-            <div className="intro-heading">
-              <span>The</span>
-              <span>Synthetic</span>
-              <span><em>Muse</em></span>
+            <div className="intro-heading-container">
+              <img className="intro-logo" src="/assets/logos/onecool-logo.png" alt="One Cool" />
             </div>
             <p className="intro-statement">
               A new renaissance for moving image.<br />
