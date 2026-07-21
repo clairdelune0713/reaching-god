@@ -761,10 +761,8 @@ export default function CinematicExperience() {
           <WebGLAtmosphere progress={clamp(scrollProgress > 1 ? 2 - scrollProgress : 0)} />
 
           <header className="site-header">
-            <button className="brand-lockup" type="button" onClick={scrollHome} aria-label="AIFX home">
-              <span className="brand-glyph">A</span>
-              <span>AIFX Editions</span>
-              <em>Vol. 01</em>
+            <button className="brand-lockup" type="button" onClick={scrollHome} aria-label="One Cool AIFX home">
+              <img className="header-logo" src="/assets/logos/onecool-logo.png" alt="One Cool AIFX" />
             </button>
             <button
               className="index-button"
@@ -788,10 +786,6 @@ export default function CinematicExperience() {
               Start a project
             </a>
           </header>
-
-          <aside className="edition-title" aria-hidden={scrollProgress < 0.18}>
-            <img className="edition-logo" src="/assets/logos/onecool-logo.png" alt="One Cool" />
-          </aside>
 
           <aside className="chapter-index" aria-label="Film navigation">
             <ol>

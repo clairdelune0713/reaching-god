@@ -257,26 +257,18 @@ a:focus-visible {
 }
 
 .brand-lockup {
-  gap: 8px;
-  font-weight: 650;
+  display: inline-flex;
+  align-items: center;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
 }
 
-.brand-lockup em {
-  color: rgba(255, 255, 255, 0.55);
-  font-style: normal;
-  font-weight: 400;
-}
-
-.brand-glyph {
-  display: grid;
-  width: 18px;
-  height: 20px;
-  place-items: center;
-  clip-path: polygon(50% 0, 100% 22%, 90% 100%, 10% 100%, 0 22%);
-  color: #0c0d0e;
-  background: var(--ivory);
-  font-family: Georgia, serif;
-  font-size: 12px;
+.header-logo {
+  height: clamp(16px, 2.2vh, 22px);
+  width: auto;
+  display: block;
 }
 
 .index-button {
@@ -1426,7 +1418,8 @@ body.loading-locked {
 
 .intro-heading-container {
   display: flex;
-  align-items: flex-start;
+  justify-content: center;
+  align-items: center;
   margin-bottom: 24px;
 }
 
@@ -1435,6 +1428,7 @@ body.loading-locked {
   width: 100%;
   height: auto;
   display: block;
+  margin: 0 auto;
 }
 
 .edition-logo {
