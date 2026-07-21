@@ -849,13 +849,13 @@ export default function CinematicExperience() {
             </h1>
             {activeChapter === 0 ? (
               <div className="about-narrative-container">
-                <p className="about-text-lead">
+                <p className="about-text-paragraph">
                   One Cool AIFX is an AI-native production studio built to expand what film, brands and original IP can become.
                 </p>
-                <p className="about-text-body">
+                <p className="about-text-paragraph">
                   We combine proprietary technology, creative leadership and production craft to transform ambitious ideas into distinctive, production-ready worlds.
                 </p>
-                <p className="about-text-callout">
+                <p className="about-text-paragraph">
                   We do not simply adapt to the future of entertainment—we help define it.
                 </p>
               </div>

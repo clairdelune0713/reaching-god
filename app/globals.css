@@ -430,14 +430,14 @@ a:focus-visible {
 
 .intro-list {
   display: grid;
-  gap: 1px;
+  gap: clamp(4px, 0.8vh, 8px);
   width: 100%;
   margin: 0;
   padding: 0;
   list-style: none;
   font-size: 14px;
   font-weight: 680;
-  line-height: 1;
+  line-height: 1.1;
 }
 
 .intro-list li {
@@ -658,32 +658,13 @@ a:focus-visible {
   animation: element-reveal 1000ms var(--ease-out) 250ms forwards;
 }
 
-.about-text-lead {
+.about-text-paragraph {
   color: #ffc627;
   font-family: "Gotham", "Gotham SSm", "Montserrat", "Helvetica Neue", Arial, sans-serif;
-  font-size: clamp(15px, 1.8vw, 18px);
-  font-weight: 500;
-  line-height: 1.6;
-  letter-spacing: -0.01em;
-}
-
-.about-text-body {
-  color: #ffc627;
-  font-family: "Gotham", "Gotham SSm", "Montserrat", "Helvetica Neue", Arial, sans-serif;
-  font-size: clamp(12.5px, 1.4vw, 14.5px);
+  font-size: clamp(13px, 1.5vw, 15.5px);
   font-weight: 400;
-  line-height: 1.65;
-}
-
-.about-text-callout {
-  color: #ffc627;
-  font-family: "Gotham", "Gotham SSm", "Montserrat", "Helvetica Neue", Arial, sans-serif;
-  font-size: clamp(11.5px, 1.3vw, 13.5px);
-  font-weight: 500;
-  line-height: 1.6;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  margin-top: 4px;
+  line-height: 1.7;
+  letter-spacing: 0.01em;
 }
 
 .gate-client-info {
