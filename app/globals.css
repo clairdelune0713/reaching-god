@@ -615,6 +615,24 @@ a:focus-visible {
   text-transform: uppercase;
 }
 
+.chapter-subtitle {
+  color: #ffffff;
+  font-family: "Gotham", "Gotham SSm", "Montserrat", "Helvetica Neue", Arial, sans-serif;
+  font-size: clamp(12px, 1.4vw, 15px);
+  font-weight: 500;
+  line-height: 1.4;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  margin: calc(-1 * clamp(8px, 1.2vh, 12px)) 0 clamp(16px, 2.5vh, 24px);
+  opacity: 0;
+  transform: translateY(12px);
+  text-align: center;
+}
+
+.chapter-copy.is-visible .chapter-subtitle {
+  animation: element-reveal 1000ms var(--ease-out) 350ms forwards;
+}
+
 .word-wrap {
   display: inline-block;
   white-space: nowrap;

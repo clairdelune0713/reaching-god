@@ -10,6 +10,7 @@ type Chapter = {
   roman: string;
   category: string;
   title: string;
+  subtitle?: string;
   displayTitle: string[];
   client: string;
   action: string;
@@ -40,8 +41,9 @@ const chapters: Chapter[] = [
     number: "02",
     roman: "II",
     category: "Proprietary Model Debut",
-    title: "Warriors of the Future",
-    displayTitle: ["Warriors", "of the Future"],
+    title: "OC.AIFX 1 MODEL DEBUT",
+    subtitle: "GOOGLE CLOUD SUMMIT",
+    displayTitle: ["OC.AIFX 1", "MODEL DEBUT"],
     client: "Sony",
     action: "Watch film",
     statement: "Worlds are no longer found. They are summoned.",
@@ -54,8 +56,9 @@ const chapters: Chapter[] = [
     number: "03",
     roman: "III",
     category: "AI Commercial Production",
-    title: "WeLend",
-    displayTitle: ["We", "Lend"],
+    title: "WELAB",
+    subtitle: "HK FIRST FULLY AI-POWERED COMMERCIAL",
+    displayTitle: ["WELAB"],
     client: "BoC",
     action: "View campaign",
     statement: "A campaign can move at the speed of an idea.",
@@ -68,8 +71,9 @@ const chapters: Chapter[] = [
     number: "04",
     roman: "IV",
     category: "AI Film Promotion",
-    title: "Chinese Mummy",
-    displayTitle: ["Chinese", "Mummy"],
+    title: "尋秦記",
+    subtitle: "AI-POWERED FESTIVE MOVIE PROMOTION",
+    displayTitle: ["尋秦記"],
     client: "Museum",
     action: "Play trailer",
     statement: "History returns with a new pulse.",
@@ -82,8 +86,9 @@ const chapters: Chapter[] = [
     number: "05",
     roman: "V",
     category: "Hybrid AI MV Production",
-    title: "Defeat 99",
-    displayTitle: ["Defeat", "99"],
+    title: "擊敗99%",
+    subtitle: "Jessica 陳苡臻 Official Music Video",
+    displayTitle: ["擊敗99%"],
     client: "Warner",
     action: "Watch video",
     statement: "Music becomes architecture for impossible feeling.",
@@ -96,8 +101,9 @@ const chapters: Chapter[] = [
     number: "06",
     roman: "VI",
     category: "Original IP Creation",
-    title: "KooLoo",
-    displayTitle: ["Koo", "Loo"],
+    title: "KOOLOO",
+    subtitle: "ORIGINAL IP DEVELOPMENT & INCUBATION",
+    displayTitle: ["KOOLOO"],
     client: "One Cool",
     action: "Explore IP",
     statement: "Characters begin as sparks. We give them a universe.",
@@ -883,6 +889,11 @@ export default function CinematicExperience() {
                     );
                   })}
                 </h1>
+                {active.subtitle && (
+                  <p className="chapter-subtitle">
+                    {active.subtitle}
+                  </p>
+                )}
                 <div className="gate-client-info">
                   <div className="gate-client-logo-wrapper">
                     <img
