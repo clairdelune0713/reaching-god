@@ -234,7 +234,7 @@ a:focus-visible {
   inset: 0 0 auto;
   z-index: 80;
   display: grid;
-  grid-template-columns: auto auto 1fr auto;
+  grid-template-columns: auto 1fr auto;
   height: 68px;
   align-items: center;
   gap: 36px;
@@ -477,7 +477,7 @@ a:focus-visible {
   bottom: 22px;
   left: 14px;
   z-index: 45;
-  width: 155px;
+  width: 240px;
   opacity: var(--collapse);
   transform: translateY(var(--index-offset));
   transition: color 350ms ease;
@@ -505,6 +505,10 @@ a:focus-visible {
   text-align: left;
   cursor: pointer;
   transition: color 220ms ease, transform 350ms var(--ease-out);
+}
+
+.chapter-index button span {
+  white-space: nowrap;
 }
 
 .chapter-index button i {
@@ -618,7 +622,7 @@ a:focus-visible {
 .chapter-subtitle {
   color: #ffffff;
   font-family: "Gotham", "Gotham SSm", "Montserrat", "Helvetica Neue", Arial, sans-serif;
-  font-size: clamp(12px, 1.4vw, 15px);
+  font-size: clamp(13.5px, 1.55vw, 17.5px);
   font-weight: 500;
   line-height: 1.4;
   letter-spacing: 0.16em;
@@ -737,6 +741,22 @@ a:focus-visible {
   line-height: 1.65;
   letter-spacing: 0.01em;
   margin: 0;
+}
+
+.card-icon {
+  width: clamp(24px, 3.5vw, 32px);
+  height: clamp(24px, 3.5vw, 32px);
+  color: #ffc627;
+  opacity: 0.85;
+  margin-bottom: clamp(14px, 2vh, 18px);
+  transition: transform 600ms var(--ease-out), color 300ms ease, filter 300ms ease;
+  filter: drop-shadow(0 2px 8px rgba(255, 198, 39, 0.12));
+}
+
+.about-column:hover .card-icon {
+  color: #ffffff;
+  transform: scale(1.1) rotate(4deg);
+  filter: drop-shadow(0 4px 12px rgba(255, 255, 255, 0.25));
 }
 
 @media (max-width: 768px) {
@@ -1043,17 +1063,17 @@ a:focus-visible {
 
   .project-link { padding: 9px 13px; }
   .brand-lockup em { display: none; }
-  .chapter-index { width: 132px; }
+  .chapter-index { width: 190px; }
   .chapter-index button { font-size: 12px; }
 
   .chapter-kicker,
   .chapter-title,
   .chapter-meta {
-    left: 164px;
+    left: 216px;
   }
 
   .chapter-title {
-    width: calc(100vw - 180px);
+    width: calc(100vw - 232px);
     font-size: clamp(61px, 11.2vw, 104px);
   }
 

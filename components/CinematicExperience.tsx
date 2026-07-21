@@ -842,6 +842,17 @@ export default function CinematicExperience() {
                 </div>
                 <div className="about-narrative-container">
                   <div className="about-column">
+                    <svg className="card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M12 8L16 12L12 16L8 12Z" fill="rgba(255, 198, 39, 0.1)" />
+                      <path d="M3 8V3H8" />
+                      <path d="M21 8V3H16" />
+                      <path d="M3 16V21H8" />
+                      <path d="M21 16V21H16" />
+                      <path d="M8 8L5 5" />
+                      <path d="M16 8L19 5" />
+                      <path d="M8 16L5 19" />
+                      <path d="M16 16L19 19" />
+                    </svg>
                     <div className="about-column-header">
                       <span>01 / EXPAND</span>
                     </div>
@@ -850,6 +861,13 @@ export default function CinematicExperience() {
                     </p>
                   </div>
                   <div className="about-column">
+                    <svg className="card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                      <circle cx="12" cy="12" r="9" strokeDasharray="3 3" />
+                      <circle cx="12" cy="12" r="5" strokeDasharray="1 2" />
+                      <path d="M12 3C12 3 12 9 12 12C9 12 3 12 3 12C3 12 9 12 12 12C12 15 12 21 12 21C12 21 12 15 12 12C15 12 21 12 21 12C21 12 15 12 12 12Z" fill="rgba(255, 198, 39, 0.15)" />
+                      <circle cx="6" cy="6" r="0.8" fill="currentColor" />
+                      <circle cx="18" cy="18" r="0.8" fill="currentColor" />
+                    </svg>
                     <div className="about-column-header">
                       <span>02 / TRANSFORM</span>
                     </div>
@@ -858,6 +876,18 @@ export default function CinematicExperience() {
                     </p>
                   </div>
                   <div className="about-column">
+                    <svg className="card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M6 3H3V6" />
+                      <path d="M18 3H21V6" />
+                      <path d="M6 21H3V18" />
+                      <path d="M18 21H21V18" />
+                      <circle cx="12" cy="12" r="4.5" fill="rgba(255, 198, 39, 0.1)" />
+                      <path d="M12 2V5" />
+                      <path d="M12 19V22" />
+                      <path d="M2 12H5" />
+                      <path d="M19 12H22" />
+                      <circle cx="12" cy="12" r="1.2" fill="currentColor" />
+                    </svg>
                     <div className="about-column-header">
                       <span>03 / DEFINE</span>
                     </div>
