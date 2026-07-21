@@ -816,8 +816,8 @@ export default function CinematicExperience() {
               <img className="intro-logo" src="/assets/logos/onecool-logo.png" alt="One Cool" />
             </div>
             <p className="intro-statement">
-              A new renaissance for moving image.<br />
-              Five worlds, made possible by imagination.
+              {/* A new renaissance for moving image.<br />
+              Five worlds, made possible by imagination. */}
             </p>
             <ol className="intro-list">
               {chapters.map((chapter, index) => (
