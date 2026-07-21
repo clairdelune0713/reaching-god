@@ -204,8 +204,9 @@ export default function VideoWipeCanvas({ activeIndex, videosRef }: Props) {
     const render = () => {
       const videos = videosRef.current ?? [];
       const transition = transitionRef.current;
-      const from = Math.min(4, Math.max(0, transition.from));
-      const to = Math.min(4, Math.max(0, transition.to));
+      const maxIndex = Math.max(0, videos.length - 1);
+      const from = Math.min(maxIndex, Math.max(0, transition.from));
+      const to = Math.min(maxIndex, Math.max(0, transition.to));
       const videoA = videos[from];
       const videoB = videos[to];
       const readyA = Boolean(videoA && videoA.readyState >= 2 && videoA.videoWidth > 0);

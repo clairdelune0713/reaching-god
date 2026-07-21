@@ -37,6 +37,20 @@ const chapters: Chapter[] = [
     accent: "#c56c56",
   },
   {
+    number: "01",
+    roman: "I",
+    category: "Movie",
+    title: "Warriors of the Future",
+    displayTitle: ["Warriors", "of the Future"],
+    client: "Sony",
+    action: "Watch film",
+    statement: "Worlds are no longer found. They are summoned.",
+    detail: "Feature-scale spectacle shaped through AI, live action craft and relentless imagination.",
+    video:
+      "https://video.henrywithu.com/static/streaming-playlists/hls/81936e4a-302e-4c7c-92b7-70209c4106ef/e80bfa77-256b-4652-a956-9e45f626df73-1080-fragmented.mp4",
+    accent: "#c56c56",
+  },
+  {
     number: "02",
     roman: "II",
     category: "Commercial",
@@ -111,7 +125,7 @@ export default function CinematicExperience() {
 
   // Preloading & Buffering States
   const [heroBgLoaded, setHeroBgLoaded] = useState(false);
-  const [videosLoaded, setVideosLoaded] = useState<boolean[]>([false, false, false, false, false]);
+  const [videosLoaded, setVideosLoaded] = useState<boolean[]>([false, false, false, false, false, false]);
   const [isEntered, setIsEntered] = useState(false);
   const [isPreloaded, setIsPreloaded] = useState(false);
   const [timedOut, setTimedOut] = useState(false);
@@ -126,14 +140,14 @@ export default function CinematicExperience() {
   const isEnteredRef = useRef(isEntered);
 
   // Compute loading percentage
-  // Hero Background: 15%, Video 1: 25%, Videos 2-5: 15% each
   const loadingProgress = 
-    (heroBgLoaded ? 15 : 0) +
-    (videosLoaded[0] ? 25 : 0) +
-    (videosLoaded[1] ? 15 : 0) +
-    (videosLoaded[2] ? 15 : 0) +
-    (videosLoaded[3] ? 15 : 0) +
-    (videosLoaded[4] ? 15 : 0);
+    (heroBgLoaded ? 10 : 0) +
+    (videosLoaded[0] ? 20 : 0) +
+    (videosLoaded[1] ? 20 : 0) +
+    (videosLoaded[2] ? 13 : 0) +
+    (videosLoaded[3] ? 13 : 0) +
+    (videosLoaded[4] ? 12 : 0) +
+    (videosLoaded[5] ? 12 : 0);
 
   // Audio Fade Utility for bgm.mp3
   const fadeAudio = useCallback((targetVolume: number, durationMs: number) => {
@@ -326,7 +340,7 @@ export default function CinematicExperience() {
 
       let targetPage = currentPage;
       if (e.deltaY > 0) {
-        targetPage = Math.min(currentPage + 1, 5);
+        targetPage = Math.min(currentPage + 1, chapters.length);
       } else if (e.deltaY < 0) {
         targetPage = Math.max(currentPage - 1, 0);
       }
@@ -380,7 +394,7 @@ export default function CinematicExperience() {
 
       let targetPage = currentPage;
       if (e.key === "ArrowDown" || e.key === "PageDown" || (e.key === " " && !e.shiftKey)) {
-        targetPage = Math.min(currentPage + 1, 5);
+        targetPage = Math.min(currentPage + 1, chapters.length);
       } else if (e.key === "ArrowUp" || e.key === "PageUp" || (e.key === " " && e.shiftKey)) {
         targetPage = Math.max(currentPage - 1, 0);
       }
@@ -442,7 +456,7 @@ export default function CinematicExperience() {
 
       let targetPage = currentPage;
       if (deltaY > 0) {
-        targetPage = Math.min(currentPage + 1, 5);
+        targetPage = Math.min(currentPage + 1, chapters.length);
       } else if (deltaY < 0) {
         targetPage = Math.max(currentPage - 1, 0);
       }
@@ -504,13 +518,26 @@ export default function CinematicExperience() {
     const viewport = Math.max(window.innerHeight, 1);
     const raw = clamp(window.scrollY / viewport, 0, chapters.length);
 
-    const collapse = smoothstep(0.08, 0.43, smoothIntro);
-    const etch = smoothstep(0.40, 0.61, smoothIntro) * (1 - smoothstep(0.73, 0.93, smoothIntro));
-    const reveal = smoothstep(0.63, 0.96, smoothIntro);
-    const copyReveal = smoothstep(0.80, 1, smoothIntro);
-    const heroOpacity = 1 - smoothstep(0.62, 0.94, smoothIntro);
+    const introPart1 = clamp(smoothIntro, 0, 1);
+    const collapse = smoothstep(0.08, 0.43, introPart1);
+    const reveal = smoothstep(0.63, 0.96, introPart1);
+    const copyReveal = smoothstep(0.80, 1, introPart1);
 
-    root.style.setProperty("--intro", smoothIntro.toFixed(4));
+    // Etch is only active during Transition 2
+    let etch = 0;
+    if (smoothIntro > 1 && smoothIntro <= 2) {
+      const progress2 = 2 - smoothIntro; // goes from 1 to 0 as we scroll 1 to 2
+      etch = smoothstep(0.40, 0.61, progress2) * (1 - smoothstep(0.73, 0.93, progress2));
+    }
+
+    // Hero opacity: 1 on Page 0 & 1, fades out during Transition 2
+    let heroOpacity = 1;
+    if (smoothIntro > 1) {
+      const progress2 = smoothIntro - 1; // goes from 0 to 1
+      heroOpacity = 1 - smoothstep(0.62, 0.94, progress2);
+    }
+
+    root.style.setProperty("--intro", introPart1.toFixed(4));
     root.style.setProperty("--collapse", collapse.toFixed(4));
     root.style.setProperty("--etch", etch.toFixed(4));
     root.style.setProperty("--reveal", reveal.toFixed(4));
@@ -543,7 +570,7 @@ export default function CinematicExperience() {
     if (!root) return;
     const viewport = Math.max(window.innerHeight, 1);
     const raw = clamp(window.scrollY / viewport, 0, chapters.length);
-    const intro = clamp(raw, 0, 1);
+    const intro = clamp(raw, 0, 2);
 
     targetIntroRef.current = intro;
     if (lerpFrameRef.current === null) {
@@ -664,7 +691,7 @@ export default function CinematicExperience() {
               const isLoaded = videosLoaded[index];
               return (
                 <div 
-                  key={chapter.title} 
+                  key={`${chapter.title}-${index}`} 
                   className="chapter-video-container" 
                   style={{ 
                     position: "absolute", 
@@ -709,14 +736,14 @@ export default function CinematicExperience() {
 
           <div className="hero-world" aria-hidden="true">
             <img className="hero-background" src="/assets/hero-layers/background.png" alt="" />
-            <CharacterMotionCanvas progress={clamp(scrollProgress)} />
+            <CharacterMotionCanvas progress={clamp(scrollProgress <= 1 ? scrollProgress : 2 - scrollProgress)} />
             <div className="hero-etch" />
           </div>
 
           <div className="video-darkness" aria-hidden="true" />
           <div className="cinematic-vignette" aria-hidden="true" />
           <div className="film-grain" aria-hidden="true" />
-          <WebGLAtmosphere progress={clamp(scrollProgress)} />
+          <WebGLAtmosphere progress={clamp(scrollProgress > 1 ? 2 - scrollProgress : 0)} />
 
           <header className="site-header">
             <button className="brand-lockup" type="button" onClick={scrollHome} aria-label="AIFX home">
@@ -754,7 +781,7 @@ export default function CinematicExperience() {
           <aside className="chapter-index" aria-label="Film navigation">
             <ol>
               {chapters.map((chapter, index) => (
-                <li key={chapter.title} className={activeChapter === index ? "is-active" : ""}>
+                <li key={`${chapter.title}-${index}`} className={activeChapter === index ? "is-active" : ""}>
                   <button type="button" onClick={() => scrollToChapter(index)}>
                     <span>{chapter.category}</span>
                     <i>{chapter.roman}</i>
@@ -778,8 +805,8 @@ export default function CinematicExperience() {
               Five worlds, made possible by imagination.
             </p>
             <ol className="intro-list">
-              {chapters.map((chapter) => (
-                <li key={chapter.title}>
+              {chapters.map((chapter, index) => (
+                <li key={`${chapter.title}-${index}`}>
                   <span>{chapter.category}</span><i>{chapter.roman}</i>
                 </li>
               ))}
@@ -787,7 +814,7 @@ export default function CinematicExperience() {
             <p className="intro-edition">AI FILM · CAMPAIGNS · ORIGINAL IP</p>
           </div>
 
-          <div className={`chapter-copy${activeChapter >= 0 ? " is-visible" : ""}`} key={active.title}>
+          <div className={`chapter-copy${activeChapter >= 0 ? " is-visible" : ""}`} key={activeChapter}>
             <div className="gate-eyebrow-container">
               <span className="gate-category">{active.category}</span>
             </div>
@@ -815,7 +842,7 @@ export default function CinematicExperience() {
               <div className="gate-client-logo-wrapper">
                 <img
                   className="gate-client-logo"
-                  src={`/assets/logos-normalized/${Math.max(activeChapter, 0) + 1}.png`}
+                  src={`/assets/logos-normalized/${activeChapter === 0 ? 1 : Math.max(1, activeChapter)}.png`}
                   alt={active.client}
                 />
               </div>
@@ -836,7 +863,7 @@ export default function CinematicExperience() {
           <div className="chapter-progress" aria-hidden="true">
             {chapters.map((chapter, index) => (
               <button
-                key={chapter.number}
+                key={`${chapter.number}-${index}`}
                 className={activeChapter === index ? "is-active" : ""}
                 type="button"
                 tabIndex={-1}
@@ -858,7 +885,7 @@ export default function CinematicExperience() {
               <p className="menu-eyebrow">Five films · One new image culture</p>
               <nav aria-label="All films">
                 {chapters.map((chapter, index) => (
-                  <button type="button" key={chapter.title} onClick={() => scrollToChapter(index)}>
+                  <button type="button" key={`${chapter.title}-${index}`} onClick={() => scrollToChapter(index)}>
                     <small>{chapter.number} / {chapter.category}</small>
                     <span>{chapter.title}</span>
                     <i>↗</i>
