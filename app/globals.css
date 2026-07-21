@@ -642,29 +642,91 @@ a:focus-visible {
   width: 0.25em;
 }
 
-.about-narrative-container {
+.about-logo-container {
   display: flex;
-  flex-direction: column;
+  justify-content: center;
   align-items: center;
-  gap: clamp(14px, 2vh, 20px);
-  max-width: 680px;
-  margin: clamp(8px, 1.5vh, 16px) auto clamp(16px, 2.5vh, 32px);
-  text-align: center;
+  width: 100%;
+  margin: 0 auto clamp(20px, 3.5vh, 32px) auto;
+  opacity: 0;
+  transform: translateY(18px);
+}
+
+.chapter-copy.is-visible .about-logo-container {
+  animation: element-reveal 1000ms var(--ease-out) 150ms forwards;
+}
+
+.about-logo {
+  width: clamp(240px, 30vw, 360px);
+  height: auto;
+  display: block;
+}
+
+.about-narrative-container {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: clamp(16px, 2.5vw, 32px);
+  max-width: 980px;
+  margin: 0 auto;
+  width: 100%;
   opacity: 0;
   transform: translateY(18px);
 }
 
 .chapter-copy.is-visible .about-narrative-container {
-  animation: element-reveal 1000ms var(--ease-out) 250ms forwards;
+  animation: element-reveal 1000ms var(--ease-out) 300ms forwards;
+}
+
+.about-column {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: clamp(14px, 2vh, 20px) clamp(16px, 2.2vw, 24px);
+  background: rgba(255, 198, 39, 0.012);
+  border-top: 1px solid rgba(255, 198, 39, 0.16);
+  border-right: 1px solid rgba(255, 198, 39, 0.03);
+  border-bottom: 1px solid rgba(255, 198, 39, 0.03);
+  border-left: 1px solid rgba(255, 198, 39, 0.03);
+  backdrop-filter: blur(10px);
+  border-radius: 4px;
+  transition: all 400ms cubic-bezier(0.16, 1, 0.3, 1);
+  text-align: left;
+}
+
+.about-column:hover {
+  background: rgba(255, 198, 39, 0.04);
+  border-top-color: rgba(255, 198, 39, 0.65);
+  transform: translateY(-4px);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.22);
+}
+
+.about-column-header {
+  font-family: "Gotham", "Gotham SSm", "Montserrat", sans-serif;
+  font-size: clamp(10px, 1.1vw, 11px);
+  font-weight: 500;
+  letter-spacing: 0.16em;
+  color: rgba(255, 198, 39, 0.75);
+  border-bottom: 1px solid rgba(255, 198, 39, 0.12);
+  padding-bottom: 8px;
+  margin-bottom: 4px;
 }
 
 .about-text-paragraph {
   color: #ffc627;
   font-family: "Gotham", "Gotham SSm", "Montserrat", "Helvetica Neue", Arial, sans-serif;
-  font-size: clamp(13px, 1.5vw, 15.5px);
+  font-size: clamp(12.5px, 1.4vw, 14px);
   font-weight: 400;
-  line-height: 1.7;
+  line-height: 1.65;
   letter-spacing: 0.01em;
+  margin: 0;
+}
+
+@media (max-width: 768px) {
+  .about-narrative-container {
+    grid-template-columns: 1fr;
+    gap: 16px;
+    max-width: 450px;
+  }
 }
 
 .gate-client-info {
@@ -1405,7 +1467,7 @@ body.loading-locked {
 }
 
 .intro-logo {
-  max-width: 125px;
+  max-width: 250px;
   width: 100%;
   height: auto;
   display: block;

@@ -764,6 +764,7 @@ export default function CinematicExperience() {
             <button className="brand-lockup" type="button" onClick={scrollHome} aria-label="One Cool AIFX home">
               <img className="header-logo" src="/assets/logos/onecool-logo.png" alt="One Cool AIFX" />
             </button>
+            {/*
             <button
               className="index-button"
               type="button"
@@ -773,6 +774,7 @@ export default function CinematicExperience() {
             >
               Index <span aria-hidden="true">{menuOpen ? "×" : "+"}</span>
             </button>
+            */}
             <button
               className="sound-toggle"
               type="button"
@@ -827,52 +829,76 @@ export default function CinematicExperience() {
             <div className="gate-eyebrow-container">
               <span className="gate-category">{active.category}</span>
             </div>
-            <h1 className="split-text-title">
-              {active.title.split(" ").map((word, wordIndex, words) => {
-                const preceding = words.slice(0, wordIndex).join(" ");
-                const start = preceding ? preceding.length + 1 : 0;
-                return (
-                  <Fragment key={word}>
-                    <span className="word-wrap">
-                      {word.split("").map((character, characterIndex) => (
-                        <span className="char-wrap" key={`${character}-${characterIndex}`}>
-                          <span className="char" style={{ animationDelay: `${(start + characterIndex) * 0.015}s` }}>
-                            {character}
-                          </span>
-                        </span>
-                      ))}
-                    </span>
-                    {wordIndex < words.length - 1 && <span className="space" aria-hidden="true">&nbsp;</span>}
-                  </Fragment>
-                );
-              })}
-            </h1>
             {activeChapter === 0 ? (
-              <div className="about-narrative-container">
-                <p className="about-text-paragraph">
-                  One Cool AIFX is an AI-native production studio built to expand what film, brands and original IP can become.
-                </p>
-                <p className="about-text-paragraph">
-                  We combine proprietary technology, creative leadership and production craft to transform ambitious ideas into distinctive, production-ready worlds.
-                </p>
-                <p className="about-text-paragraph">
-                  We do not simply adapt to the future of entertainment—we help define it.
-                </p>
-              </div>
-            ) : (
-              <div className="gate-client-info">
-                <div className="gate-client-logo-wrapper">
-                  <img
-                    className="gate-client-logo"
-                    src={`/assets/logos-normalized/${activeChapter === 0 ? 1 : Math.max(1, activeChapter)}.png`}
-                    alt={active.client}
-                  />
+              <>
+                <div className="about-logo-container">
+                  <img className="about-logo" src="/assets/logos/onecool-logo.png" alt="One Cool AIFX" />
                 </div>
-              </div>
+                <div className="about-narrative-container">
+                  <div className="about-column">
+                    <div className="about-column-header">
+                      <span>01 / EXPAND</span>
+                    </div>
+                    <p className="about-text-paragraph">
+                      One Cool AIFX is an AI-native production studio built to expand what film, brands and original IP can become.
+                    </p>
+                  </div>
+                  <div className="about-column">
+                    <div className="about-column-header">
+                      <span>02 / TRANSFORM</span>
+                    </div>
+                    <p className="about-text-paragraph">
+                      We combine proprietary technology, creative leadership and production craft to transform ambitious ideas into distinctive, production-ready worlds.
+                    </p>
+                  </div>
+                  <div className="about-column">
+                    <div className="about-column-header">
+                      <span>03 / DEFINE</span>
+                    </div>
+                    <p className="about-text-paragraph">
+                      We do not simply adapt to the future of entertainment—we help define it.
+                    </p>
+                  </div>
+                </div>
+              </>
+            ) : (
+              <>
+                <h1 className="split-text-title">
+                  {active.title.split(" ").map((word, wordIndex, words) => {
+                    const preceding = words.slice(0, wordIndex).join(" ");
+                    const start = preceding ? preceding.length + 1 : 0;
+                    return (
+                      <Fragment key={word}>
+                        <span className="word-wrap">
+                          {word.split("").map((character, characterIndex) => (
+                            <span className="char-wrap" key={`${character}-${characterIndex}`}>
+                              <span className="char" style={{ animationDelay: `${(start + characterIndex) * 0.015}s` }}>
+                                {character}
+                              </span>
+                            </span>
+                          ))}
+                        </span>
+                        {wordIndex < words.length - 1 && <span className="space" aria-hidden="true">&nbsp;</span>}
+                      </Fragment>
+                    );
+                  })}
+                </h1>
+                <div className="gate-client-info">
+                  <div className="gate-client-logo-wrapper">
+                    <img
+                      className="gate-client-logo"
+                      src={`/assets/logos-normalized/${activeChapter === 0 ? 1 : Math.max(1, activeChapter)}.png`}
+                      alt={active.client}
+                    />
+                  </div>
+                </div>
+              </>
             )}
-            <button className="ritual-button" type="button" onClick={handleButtonClick}>
-              <span>{active.action}</span>
-            </button>
+            {activeChapter !== 0 && (
+              <button className="ritual-button" type="button" onClick={handleButtonClick}>
+                <span>{active.action}</span>
+              </button>
+            )}
           </div>
 
           <p className="scroll-cue">
