@@ -25,35 +25,35 @@ const chapters: Chapter[] = [
   {
     number: "01",
     roman: "I",
-    category: "Movie",
-    title: "Warriors of the Future",
-    displayTitle: ["Warriors", "of the Future"],
-    client: "Sony",
-    action: "Watch film",
-    statement: "Worlds are no longer found. They are summoned.",
-    detail: "Feature-scale spectacle shaped through AI, live action craft and relentless imagination.",
+    category: "About",
+    title: "One Cool AIFX",
+    displayTitle: ["One", "Cool", "AIFX"],
+    client: "One Cool AIFX",
+    action: "Enter worlds",
+    statement: "One Cool AIFX is an AI-native production studio built to expand what film, brands and original IP can become.",
+    detail: "We combine proprietary technology, creative leadership and production craft to transform ambitious ideas into distinctive, production-ready worlds. We do not simply adapt to the future of entertainment—we help define it.",
     video:
       "https://video.henrywithu.com/static/streaming-playlists/hls/81936e4a-302e-4c7c-92b7-70209c4106ef/e80bfa77-256b-4652-a956-9e45f626df73-1080-fragmented.mp4",
-    accent: "#c56c56",
-  },
-  {
-    number: "01",
-    roman: "I",
-    category: "Movie",
-    title: "Warriors of the Future",
-    displayTitle: ["Warriors", "of the Future"],
-    client: "Sony",
-    action: "Watch film",
-    statement: "Worlds are no longer found. They are summoned.",
-    detail: "Feature-scale spectacle shaped through AI, live action craft and relentless imagination.",
-    video:
-      "https://video.henrywithu.com/static/streaming-playlists/hls/81936e4a-302e-4c7c-92b7-70209c4106ef/e80bfa77-256b-4652-a956-9e45f626df73-1080-fragmented.mp4",
-    accent: "#c56c56",
+    accent: "#ffc627",
   },
   {
     number: "02",
     roman: "II",
-    category: "Commercial",
+    category: "Proprietary Model Debut",
+    title: "Warriors of the Future",
+    displayTitle: ["Warriors", "of the Future"],
+    client: "Sony",
+    action: "Watch film",
+    statement: "Worlds are no longer found. They are summoned.",
+    detail: "Feature-scale spectacle shaped through AI, live action craft and relentless imagination.",
+    video:
+      "https://video.henrywithu.com/static/streaming-playlists/hls/81936e4a-302e-4c7c-92b7-70209c4106ef/e80bfa77-256b-4652-a956-9e45f626df73-1080-fragmented.mp4",
+    accent: "#c56c56",
+  },
+  {
+    number: "03",
+    roman: "III",
+    category: "AI Commercial Production",
     title: "WeLend",
     displayTitle: ["We", "Lend"],
     client: "BoC",
@@ -65,9 +65,9 @@ const chapters: Chapter[] = [
     accent: "#4f8c86",
   },
   {
-    number: "03",
-    roman: "III",
-    category: "Trailer",
+    number: "04",
+    roman: "IV",
+    category: "AI Film Promotion",
     title: "Chinese Mummy",
     displayTitle: ["Chinese", "Mummy"],
     client: "Museum",
@@ -79,9 +79,9 @@ const chapters: Chapter[] = [
     accent: "#b7a45a",
   },
   {
-    number: "04",
-    roman: "IV",
-    category: "MV",
+    number: "05",
+    roman: "V",
+    category: "Hybrid AI MV Production",
     title: "Defeat 99",
     displayTitle: ["Defeat", "99"],
     client: "Warner",
@@ -93,9 +93,9 @@ const chapters: Chapter[] = [
     accent: "#6d7359",
   },
   {
-    number: "05",
-    roman: "V",
-    category: "IP Creation",
+    number: "06",
+    roman: "VI",
+    category: "Original IP Creation",
     title: "KooLoo",
     displayTitle: ["Koo", "Loo"],
     client: "One Cool",
@@ -537,6 +537,13 @@ export default function CinematicExperience() {
       heroOpacity = 1 - smoothstep(0.62, 0.94, progress2);
     }
 
+    let baseBrightness = 1;
+    if (smoothIntro <= 1) {
+      baseBrightness = 1 - smoothIntro * 0.44; // darkens from 1.0 down to 0.56 for the About page
+    } else {
+      baseBrightness = 0.56;
+    }
+
     root.style.setProperty("--intro", introPart1.toFixed(4));
     root.style.setProperty("--collapse", collapse.toFixed(4));
     root.style.setProperty("--etch", etch.toFixed(4));
@@ -546,7 +553,7 @@ export default function CinematicExperience() {
     root.style.setProperty("--hero-opacity", heroOpacity.toFixed(4));
     root.style.setProperty("--hero-scale", (1.02 + collapse * 0.035).toFixed(4));
     root.style.setProperty("--hero-contrast", (1 + etch * 1.35).toFixed(4));
-    root.style.setProperty("--hero-brightness", (1 - etch * 0.34).toFixed(4));
+    root.style.setProperty("--hero-brightness", (baseBrightness - etch * 0.34).toFixed(4));
     root.style.setProperty("--title-y", `${((1 - reveal) * 54).toFixed(3)}vh`);
     root.style.setProperty("--meta-y", `${((1 - reveal) * 13.5).toFixed(3)}vh`);
     root.style.setProperty("--edition-offset", `${((1 - collapse) * 18).toFixed(2)}px`);
@@ -643,6 +650,14 @@ export default function CinematicExperience() {
     video.currentTime = 0;
     video.play().catch(() => undefined);
   }, [activeChapter]);
+
+  const handleButtonClick = useCallback(() => {
+    if (activeChapter === 0) {
+      scrollToChapter(1);
+    } else {
+      replayActiveFilm();
+    }
+  }, [activeChapter, scrollToChapter, replayActiveFilm]);
 
   return (
     <div className="cinematic-root" ref={rootRef}>
@@ -838,16 +853,30 @@ export default function CinematicExperience() {
                 );
               })}
             </h1>
-            <div className="gate-client-info">
-              <div className="gate-client-logo-wrapper">
-                <img
-                  className="gate-client-logo"
-                  src={`/assets/logos-normalized/${activeChapter === 0 ? 1 : Math.max(1, activeChapter)}.png`}
-                  alt={active.client}
-                />
+            {activeChapter === 0 ? (
+              <div className="about-narrative-container">
+                <p className="about-text-lead">
+                  One Cool AIFX is an AI-native production studio built to expand what film, brands and original IP can become.
+                </p>
+                <p className="about-text-body">
+                  We combine proprietary technology, creative leadership and production craft to transform ambitious ideas into distinctive, production-ready worlds.
+                </p>
+                <p className="about-text-callout">
+                  We do not simply adapt to the future of entertainment—we help define it.
+                </p>
               </div>
-            </div>
-            <button className="ritual-button" type="button" onClick={replayActiveFilm}>
+            ) : (
+              <div className="gate-client-info">
+                <div className="gate-client-logo-wrapper">
+                  <img
+                    className="gate-client-logo"
+                    src={`/assets/logos-normalized/${activeChapter === 0 ? 1 : Math.max(1, activeChapter)}.png`}
+                    alt={active.client}
+                  />
+                </div>
+              </div>
+            )}
+            <button className="ritual-button" type="button" onClick={handleButtonClick}>
               <span>{active.action}</span>
             </button>
           </div>
@@ -857,7 +886,7 @@ export default function CinematicExperience() {
           </p>
 
           <p className="scene-count" aria-live="polite">
-            <b>{activeChapter < 0 ? "00" : active.number}</b><span>/ 05</span>
+            <b>{activeChapter < 0 ? "00" : active.number}</b><span>/ 06</span>
           </p>
 
           <div className="chapter-progress" aria-hidden="true">
@@ -882,7 +911,7 @@ export default function CinematicExperience() {
               <img src="/assets/characters/kooloo.jpg" alt="" />
             </div>
             <div className="menu-content">
-              <p className="menu-eyebrow">Five films · One new image culture</p>
+              <p className="menu-eyebrow">Six chapters · One new image culture</p>
               <nav aria-label="All films">
                 {chapters.map((chapter, index) => (
                   <button type="button" key={`${chapter.title}-${index}`} onClick={() => scrollToChapter(index)}>
@@ -897,13 +926,13 @@ export default function CinematicExperience() {
         </div>
 
         <div className="scroll-spine" aria-hidden="true">
-          {Array.from({ length: 6 }, (_, index) => <div className="snap-point" key={index} />)}
+          {Array.from({ length: chapters.length + 1 }, (_, index) => <div className="snap-point" key={index} />)}
         </div>
       </section>
 
       <div className="semantic-content">
-        {chapters.map((chapter) => (
-          <section key={chapter.title} id={chapter.title.toLowerCase().replaceAll(" ", "-")}>
+        {chapters.map((chapter, index) => (
+          <section key={`${chapter.title}-${index}`} id={chapter.title.toLowerCase().replaceAll(" ", "-")}>
             <h2>{chapter.title}</h2>
             <p>{chapter.category}. Client: {chapter.client}. {chapter.detail}</p>
           </section>
