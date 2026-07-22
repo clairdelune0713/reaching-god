@@ -64,7 +64,7 @@ A premium experience demands complete control over assets, timing, and sensory f
    * Overrides native page-scrolling behaviors to ensure page-by-page snapping (Intro, Chapter I, II, III, IV, and V).
    * Intercepts `wheel`, keyboard (`ArrowDown`, `ArrowUp`, `PageDown`, `PageUp`, `Spacebar`), and swipe gestures (`touchstart`, `touchmove`, `touchend`), processing inputs through an 800ms transition cooldown to enforce fluid cinematic page snaps without momentum jitter.
 3. **Automated Audio Fades & Autoplay Compliance**:
-   * Incorporates high-fidelity browser autoplay compliant controls for `bgm.mp3`.
+   * Incorporates high-fidelity browser autoplay compliant controls for `bgm.m4a`.
    * Automatically sets up event-listener fallbacks (`click`, `touchstart`, `pointerdown`) to unmute and trigger audio when user interaction is registered, easing in sound with a slow 2000ms audio fade.
 
 ---

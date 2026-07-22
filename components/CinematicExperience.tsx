@@ -155,7 +155,7 @@ export default function CinematicExperience() {
     (videosLoaded[4] ? 12 : 0) +
     (videosLoaded[5] ? 12 : 0);
 
-  // Audio Fade Utility for bgm.mp3
+  // Audio Fade Utility for bgm.m4a
   const fadeAudio = useCallback((targetVolume: number, durationMs: number) => {
     const audio = bgmRef.current;
     if (!audio) return;
@@ -252,9 +252,9 @@ export default function CinematicExperience() {
     };
   }, [isEntered]);
 
-  // Initialize and clean up bgm.mp3
+  // Initialize and clean up bgm.m4a
   useEffect(() => {
-    const audio = new Audio("/assets/bgm.mp3");
+    const audio = new Audio("/assets/bgm.m4a");
     audio.loop = true;
     audio.volume = 0;
     bgmRef.current = audio;
