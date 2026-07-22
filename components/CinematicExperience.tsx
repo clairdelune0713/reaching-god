@@ -1,6 +1,7 @@
 "use client";
 
 import { Fragment, useCallback, useEffect, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
 import CharacterMotionCanvas from "./CharacterMotionCanvas";
 import WebGLAtmosphere from "./WebGLAtmosphere";
 import VideoWipeCanvas from "./VideoWipeCanvas";
@@ -120,6 +121,7 @@ const smoothstep = (edge0: number, edge1: number, value: number) => {
   return point * point * (3 - 2 * point);
 };
 export default function CinematicExperience() {
+  const router = useRouter();
   const rootRef = useRef<HTMLDivElement>(null);
   const videosRef = useRef<Array<HTMLVideoElement | null>>([]);
   const bgmRef = useRef<HTMLAudioElement | null>(null);
@@ -134,8 +136,18 @@ export default function CinematicExperience() {
   // Preloading & Buffering States
   const [heroBgLoaded, setHeroBgLoaded] = useState(false);
   const [videosLoaded, setVideosLoaded] = useState<boolean[]>([false, false, false, false, false, false]);
-  const [isEntered, setIsEntered] = useState(false);
-  const [isPreloaded, setIsPreloaded] = useState(false);
+  const [isEntered, setIsEntered] = useState(() => {
+    if (typeof window !== "undefined") {
+      return sessionStorage.getItem("lastProjectChapter") !== null;
+    }
+    return false;
+  });
+  const [isPreloaded, setIsPreloaded] = useState(() => {
+    if (typeof window !== "undefined") {
+      return sessionStorage.getItem("lastProjectChapter") !== null;
+    }
+    return false;
+  });
   const [timedOut, setTimedOut] = useState(false);
 
   const smoothIntroRef = useRef(0);
@@ -336,7 +348,40 @@ export default function CinematicExperience() {
     if ("scrollRestoration" in window.history) {
       window.history.scrollRestoration = "manual";
     }
-    window.scrollTo(0, 0);
+
+    const lastChapterStr = sessionStorage.getItem("lastProjectChapter");
+    if (lastChapterStr !== null) {
+      const index = parseInt(lastChapterStr, 10);
+      if (!isNaN(index)) {
+        // Sync states immediately to prevent flashing
+        targetIntroRef.current = Math.min(index + 1, 2);
+        smoothIntroRef.current = Math.min(index + 1, 2);
+        setActiveChapter(index);
+        setScrollProgress(index + 1);
+
+        // Also ensure variables are set in CSS properties immediately
+        const root = rootRef.current;
+        if (root) {
+          root.style.setProperty("--intro", "1.0000");
+          root.style.setProperty("--collapse", "1.0000");
+          root.style.setProperty("--etch", "0.0000");
+          root.style.setProperty("--reveal", "1.0000");
+          root.style.setProperty("--copy-reveal", "1.0000");
+          root.style.setProperty("--etch-opacity", "0.0000");
+          root.style.setProperty("--hero-opacity", "0.0000");
+          root.style.setProperty("--accent", chapters[Math.max(index, 0)].accent);
+        }
+
+        // Delay scrolling slightly to allow browser layout calculation and override Next.js default scroll restoration
+        setTimeout(() => {
+          const targetScroll = (index + 1) * window.innerHeight;
+          window.scrollTo(0, targetScroll);
+        }, 80);
+      }
+      sessionStorage.removeItem("lastProjectChapter");
+    } else {
+      window.scrollTo(0, 0);
+    }
   }, []);
 
   // Auto-entering passage after loading completes
@@ -728,9 +773,13 @@ export default function CinematicExperience() {
     if (activeChapter === 0) {
       scrollToChapter(1);
     } else {
-      replayActiveFilm();
+      const slugs = ["", "oc-aifx-1", "welab", "back-to-the-past", "hybrid-ai-music-video", "kooloo"];
+      const slug = slugs[activeChapter];
+      if (slug) {
+        router.push(`/projects/${slug}`);
+      }
     }
-  }, [activeChapter, scrollToChapter, replayActiveFilm]);
+  }, [activeChapter, router, scrollToChapter]);
 
   return (
     <div className="cinematic-root" ref={rootRef}>

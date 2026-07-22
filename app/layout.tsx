@@ -4,7 +4,7 @@ import "./globals.css";
 export const metadata: Metadata = {
   title: "One Cool AIFX Studios",
   description:
-    "A cinematic passage through AI film, commercial campaigns, music and original IP.",
+    "End-to-end AI-native creative production by One Cool Group.",
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
