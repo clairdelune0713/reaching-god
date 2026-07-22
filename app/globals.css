@@ -347,12 +347,13 @@ a:focus-visible {
   flex-direction: column;
   padding: 24px 22px 22px;
   border: 1px solid rgba(245, 241, 232, 0.62);
-  background: linear-gradient(180deg, rgba(7, 11, 17, 0.08), rgba(7, 11, 17, 0.24));
+  background: linear-gradient(180deg, rgba(5, 8, 12, 0.45) 0%, rgba(5, 8, 12, 0.68) 100%);
   box-shadow: inset 0 0 80px rgba(255, 255, 255, 0.025);
   opacity: calc(1 - var(--collapse));
   transform: translate(-50%, -48%) scale(var(--frame-scale));
   transform-origin: center;
-  backdrop-filter: blur(var(--frame-blur));
+  backdrop-filter: blur(calc(12px + var(--frame-blur)));
+  -webkit-backdrop-filter: blur(calc(12px + var(--frame-blur)));
   pointer-events: none;
   will-change: opacity, transform;
 }
@@ -438,6 +439,7 @@ a:focus-visible {
   font-size: 14px;
   font-weight: 680;
   line-height: 1.1;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.6);
 }
 
 .intro-list li {
@@ -459,6 +461,7 @@ a:focus-visible {
   border-top: 1px solid rgba(255, 255, 255, 0.24);
   font-size: 7px;
   letter-spacing: 0.22em;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.6);
 }
 
 .edition-title {
@@ -704,14 +707,14 @@ a:focus-visible {
 .about-single-card {
   position: relative;
   padding: clamp(28px, 4vh, 48px) clamp(32px, 5vw, 64px);
-  background: linear-gradient(135deg, rgba(255, 198, 39, 0.015) 0%, rgba(255, 198, 39, 0.005) 100%);
-  border: 1px solid rgba(255, 198, 39, 0.12);
-  border-top: 1px solid rgba(255, 198, 39, 0.28);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
+  background: linear-gradient(135deg, rgba(8, 11, 16, 0.78) 0%, rgba(5, 7, 10, 0.88) 100%);
+  border: 1px solid rgba(255, 198, 39, 0.16);
+  border-top: 1px solid rgba(255, 198, 39, 0.38);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
   border-radius: 12px;
   box-shadow: 
-    0 30px 60px rgba(0, 0, 0, 0.4),
+    0 30px 60px rgba(0, 0, 0, 0.55),
     inset 0 1px 0 rgba(255, 255, 255, 0.05);
   overflow: hidden;
   transition: all 600ms cubic-bezier(0.16, 1, 0.3, 1);
@@ -725,16 +728,16 @@ a:focus-visible {
   left: 10%;
   right: 10%;
   height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(255, 198, 39, 0.6), transparent);
+  background: linear-gradient(90deg, transparent, rgba(255, 198, 39, 0.65), transparent);
 }
 
 .about-single-card:hover {
-  border-color: rgba(255, 198, 39, 0.24);
-  border-top-color: rgba(255, 198, 39, 0.6);
+  border-color: rgba(255, 198, 39, 0.28);
+  border-top-color: rgba(255, 198, 39, 0.75);
   transform: translateY(-2px);
   box-shadow: 
-    0 40px 80px rgba(0, 0, 0, 0.5),
-    0 0 40px rgba(255, 198, 39, 0.03);
+    0 40px 80px rgba(0, 0, 0, 0.65),
+    0 0 40px rgba(255, 198, 39, 0.05);
 }
 
 .card-ambient-glow {
@@ -743,7 +746,7 @@ a:focus-visible {
   left: -50%;
   width: 200%;
   height: 200%;
-  background: radial-gradient(circle at center, rgba(255, 198, 39, 0.02) 0%, transparent 60%);
+  background: radial-gradient(circle at center, rgba(255, 198, 39, 0.03) 0%, transparent 60%);
   pointer-events: none;
 }
 
@@ -756,27 +759,28 @@ a:focus-visible {
   font-size: clamp(10px, 1vw, 11px);
   font-weight: 600;
   letter-spacing: 0.25em;
-  color: rgba(255, 198, 39, 0.85);
+  color: rgba(255, 198, 39, 0.95);
   margin-bottom: clamp(20px, 3vh, 28px);
   text-transform: uppercase;
 }
 
 .gold-accent-dot {
-  color: rgba(255, 198, 39, 0.8);
+  color: rgba(255, 198, 39, 0.85);
   font-size: 8px;
-  text-shadow: 0 0 8px rgba(255, 198, 39, 0.5);
+  text-shadow: 0 0 8px rgba(255, 198, 39, 0.6);
 }
 
 .about-elegant-text {
-  color: rgba(243, 239, 229, 0.92);
+  color: var(--ivory);
   font-family: "Inter", "Helvetica Neue", Arial, sans-serif;
-  font-size: clamp(14px, 1.6vw, 16px);
-  font-weight: 300;
+  font-size: clamp(14.5px, 1.65vw, 17px);
+  font-weight: 400;
   line-height: 1.85;
-  letter-spacing: 0.03em;
+  letter-spacing: 0.035em;
   margin: 0;
   text-align: justify;
   text-align-last: center;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
 }
 
 .about-elegant-text .first-word {
@@ -1600,15 +1604,17 @@ body.loading-locked {
 .intro-slogan {
   text-align: center;
   font-family: "Inter", "Montserrat", sans-serif;
-  font-size: clamp(10px, 1.1vw, 11px);
-  font-weight: 500;
-  letter-spacing: 0.28em;
-  color: var(--accent);
+  font-size: clamp(11.5px, 1.25vw, 13px);
+  font-weight: 650;
+  letter-spacing: 0.32em;
+  color: #ffc627;
   margin-top: -4px;
   margin-bottom: 24px;
   text-transform: uppercase;
-  opacity: 0.95;
-  text-shadow: 0 0 12px rgba(223, 178, 101, 0.15);
+  opacity: 1;
+  text-shadow: 
+    0 2px 4px rgba(0, 0, 0, 0.95), 
+    0 0 16px rgba(255, 198, 39, 0.25);
   animation: angel-text-reveal 1.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
   animation-delay: 0.4s;
 }

@@ -123,6 +123,8 @@ export default function CinematicExperience() {
   const rootRef = useRef<HTMLDivElement>(null);
   const videosRef = useRef<Array<HTMLVideoElement | null>>([]);
   const bgmRef = useRef<HTMLAudioElement | null>(null);
+  const audioCtxRef = useRef<AudioContext | null>(null);
+  const gainNodeRef = useRef<GainNode | null>(null);
   const frameRef = useRef(0);
   const [scrollProgress, setScrollProgress] = useState(0);
   const [activeChapter, setActiveChapter] = useState(-1);
@@ -155,19 +157,75 @@ export default function CinematicExperience() {
     (videosLoaded[4] ? 12 : 0) +
     (videosLoaded[5] ? 12 : 0);
 
-  // Audio Fade Utility for bgm.m4a
+  // Retrieve responsive target BGM volume (0.12 for desktop/web, 0.08 for phone/mobile)
+  const getTargetVolume = useCallback(() => {
+    if (typeof window !== "undefined") {
+      const isMobile = /Mobi|Android|iPhone|iPad/i.test(navigator.userAgent) || 
+                       (navigator.maxTouchPoints && navigator.maxTouchPoints > 0);
+      return isMobile ? 0.08 : 0.12;
+    }
+    return 0.12;
+  }, []);
+
+  // Initialize Web Audio API AudioContext and GainNode for precise programmatic volume control (especially on iOS/mobile)
+  const initAudioContext = useCallback(() => {
+    const audio = bgmRef.current;
+    if (!audio || audioCtxRef.current) return;
+
+    try {
+      const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext;
+      if (AudioContextClass) {
+        const ctx = new AudioContextClass();
+        const gain = ctx.createGain();
+        
+        // Connect HTMLAudioElement -> GainNode -> Destination
+        const source = ctx.createMediaElementSource(audio);
+        source.connect(gain);
+        gain.connect(ctx.destination);
+        
+        audioCtxRef.current = ctx;
+        gainNodeRef.current = gain;
+        
+        // Set HTMLAudioElement volume to full; throttle volume programmatically via GainNode
+        audio.volume = 1;
+        gain.gain.setValueAtTime(0, ctx.currentTime);
+      }
+    } catch (err) {
+      console.warn("Web Audio API initialization failed:", err);
+    }
+  }, []);
+
+  // Audio Fade Utility for bgm.m4a (Web Audio API powered)
   const fadeAudio = useCallback((targetVolume: number, durationMs: number) => {
     const audio = bgmRef.current;
     if (!audio) return;
 
+    // Initialize AudioContext if not already done
+    initAudioContext();
+
+    const ctx = audioCtxRef.current;
+    const gainNode = gainNodeRef.current;
+
     const runFade = () => {
-      const startVolume = audio.volume;
+      // Resume context if suspended (browser autoplay policy requirement)
+      if (ctx && ctx.state === "suspended") {
+        ctx.resume().catch(() => undefined);
+      }
+
+      const startVolume = gainNode ? gainNode.gain.value : audio.volume;
       const startTime = performance.now();
 
       const animate = (now: number) => {
         const elapsed = now - startTime;
         const progress = Math.min(elapsed / durationMs, 1);
-        audio.volume = startVolume + (targetVolume - startVolume) * progress;
+        const currentVol = startVolume + (targetVolume - startVolume) * progress;
+
+        if (gainNode) {
+          gainNode.gain.setValueAtTime(currentVol, ctx ? ctx.currentTime : 0);
+        } else {
+          audio.volume = currentVol;
+        }
+
         if (progress < 1) {
           requestAnimationFrame(animate);
         } else if (targetVolume === 0) {
@@ -178,6 +236,9 @@ export default function CinematicExperience() {
     };
 
     if (targetVolume > 0 && audio.paused) {
+      if (ctx && ctx.state === "suspended") {
+        ctx.resume().catch(() => undefined);
+      }
       audio.play()
         .then(() => {
           runFade();
@@ -185,6 +246,9 @@ export default function CinematicExperience() {
         .catch(() => {
           // Autoplay fallback: wait for user interaction to trigger play and fade
           const playOnInteraction = () => {
+            if (ctx && ctx.state === "suspended") {
+              ctx.resume().catch(() => undefined);
+            }
             audio.play()
               .then(() => {
                 setSoundOn(true);
@@ -211,7 +275,7 @@ export default function CinematicExperience() {
     } else {
       runFade();
     }
-  }, []);
+  }, [initAudioContext]);
 
   // Entrance transition to the landing page (BGM slowly rises)
   const handleEnter = useCallback(() => {
@@ -224,13 +288,13 @@ export default function CinematicExperience() {
       window.scrollTo(0, 0);
     });
 
-    fadeAudio(0.04, 2000); // 2s celestial slow fade in
+    fadeAudio(getTargetVolume(), 2000); // 2s celestial slow fade in
     setSoundOn(true);
 
     setTimeout(() => {
       setIsPreloaded(true);
     }, 1800); // Match globals.css preloader-overlay fade transition
-  }, [fadeAudio]);
+  }, [fadeAudio, getTargetVolume]);
 
   useEffect(() => {
     menuOpenRef.current = menuOpen;
@@ -261,6 +325,9 @@ export default function CinematicExperience() {
 
     return () => {
       audio.pause();
+      if (audioCtxRef.current) {
+        audioCtxRef.current.close().catch(() => undefined);
+      }
     };
   }, []);
 
@@ -621,13 +688,13 @@ export default function CinematicExperience() {
   const toggleAmbience = useCallback(() => {
     const enable = !soundOn;
     if (enable) {
-      fadeAudio(0.04, 1400);
+      fadeAudio(getTargetVolume(), 1400);
       setSoundOn(true);
     } else {
       fadeAudio(0, 500);
       setSoundOn(false);
     }
-  }, [soundOn, fadeAudio]);
+  }, [soundOn, fadeAudio, getTargetVolume]);
 
   useEffect(() => {
     document.body.classList.toggle("menu-is-open", menuOpen);
