@@ -817,6 +817,7 @@ export default function CinematicExperience() {
             <div className="intro-heading-container">
               <img className="intro-logo" src="/assets/logos/onecool-logo.png" alt="One Cool" />
             </div>
+            <div className="intro-slogan">AI-NATIVE PRODUCTION SERVICE</div>
             <p className="intro-statement">
               {/* A new renaissance for moving image.<br />
               Five worlds, made possible by imagination. */}
@@ -840,59 +841,16 @@ export default function CinematicExperience() {
                 <div className="about-logo-container">
                   <img className="about-logo" src="/assets/logos/onecool-logo.png" alt="One Cool AIFX" />
                 </div>
-                <div className="about-narrative-container">
-                  <div className="about-column">
-                    <svg className="card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                      <path d="M12 8L16 12L12 16L8 12Z" fill="rgba(255, 198, 39, 0.1)" />
-                      <path d="M3 8V3H8" />
-                      <path d="M21 8V3H16" />
-                      <path d="M3 16V21H8" />
-                      <path d="M21 16V21H16" />
-                      <path d="M8 8L5 5" />
-                      <path d="M16 8L19 5" />
-                      <path d="M8 16L5 19" />
-                      <path d="M16 16L19 19" />
-                    </svg>
-                    <div className="about-column-header">
-                      <span>01 / EXPAND</span>
+                <div className="about-narrative-container single-paragraph-layout">
+                  <div className="about-single-card">
+                    <div className="card-ambient-glow" />
+                    <div className="about-card-header">
+                      <span className="gold-accent-dot">•</span>
+                      <span>VISION & TECHNOLOGY</span>
+                      <span className="gold-accent-dot">•</span>
                     </div>
-                    <p className="about-text-paragraph">
-                      One Cool AIFX is an AI-native production studio built to expand what film, brands and original IP can become.
-                    </p>
-                  </div>
-                  <div className="about-column">
-                    <svg className="card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                      <circle cx="12" cy="12" r="9" strokeDasharray="3 3" />
-                      <circle cx="12" cy="12" r="5" strokeDasharray="1 2" />
-                      <path d="M12 3C12 3 12 9 12 12C9 12 3 12 3 12C3 12 9 12 12 12C12 15 12 21 12 21C12 21 12 15 12 12C15 12 21 12 21 12C21 12 15 12 12 12Z" fill="rgba(255, 198, 39, 0.15)" />
-                      <circle cx="6" cy="6" r="0.8" fill="currentColor" />
-                      <circle cx="18" cy="18" r="0.8" fill="currentColor" />
-                    </svg>
-                    <div className="about-column-header">
-                      <span>02 / TRANSFORM</span>
-                    </div>
-                    <p className="about-text-paragraph">
-                      We combine proprietary technology, creative leadership and production craft to transform ambitious ideas into distinctive, production-ready worlds.
-                    </p>
-                  </div>
-                  <div className="about-column">
-                    <svg className="card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                      <path d="M6 3H3V6" />
-                      <path d="M18 3H21V6" />
-                      <path d="M6 21H3V18" />
-                      <path d="M18 21H21V18" />
-                      <circle cx="12" cy="12" r="4.5" fill="rgba(255, 198, 39, 0.1)" />
-                      <path d="M12 2V5" />
-                      <path d="M12 19V22" />
-                      <path d="M2 12H5" />
-                      <path d="M19 12H22" />
-                      <circle cx="12" cy="12" r="1.2" fill="currentColor" />
-                    </svg>
-                    <div className="about-column-header">
-                      <span>03 / DEFINE</span>
-                    </div>
-                    <p className="about-text-paragraph">
-                      We do not simply adapt to the future of entertainment—we help define it.
+                    <p className="about-elegant-text">
+                      <span className="first-word">One Cool AIFX</span> is an AI-native production studio built to expand the boundaries of film, brands, and original IP. By combining proprietary cutting-edge technology, visionary creative leadership, and unparalleled production craft, we transform ambitious ideas into distinctive, production-ready cinematic worlds. We do not simply adapt to the future of entertainment—we define it with professionalism, precision, and a relentless pursuit of innovation.
                     </p>
                   </div>
                 </div>
