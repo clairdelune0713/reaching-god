@@ -1781,7 +1781,7 @@ body.loading-locked {
 
 /* EDITORIAL HERO SECTION */
 .editorial-hero {
-  margin-bottom: 90px;
+  margin-bottom: 60px;
 }
 
 .editorial-hero-grid {
@@ -1858,14 +1858,14 @@ body.loading-locked {
 }
 
 .hero-content-column {
-  max-width: 1000px;
+  max-width: 1100px;
 }
 
 .editorial-eyebrow {
   display: flex;
   align-items: center;
   gap: 12px;
-  margin-bottom: 25px;
+  margin-bottom: 20px;
 }
 
 .eyebrow-accent-dot {
@@ -1884,31 +1884,41 @@ body.loading-locked {
   text-transform: uppercase;
 }
 
+.hero-chinese-title {
+  font-family: "Noto Serif TC", "Monotype Song", "Times New Roman", serif;
+  font-size: clamp(36px, 5vw, 72px);
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  color: var(--pantone-yellow);
+  margin-bottom: 10px;
+  text-shadow: 0 10px 30px rgba(255, 198, 39, 0.2);
+}
+
 .hero-title {
   font-family: "Gotham", "Gotham SSm", "Montserrat", sans-serif;
-  font-size: clamp(32px, 4.2vw, 60px);
+  font-size: clamp(30px, 4vw, 56px);
   font-weight: 700;
   line-height: 1.15;
   letter-spacing: -0.01em;
   text-transform: uppercase;
   color: var(--pantone-yellow);
-  margin-bottom: 35px;
+  margin-bottom: 30px;
   text-shadow: 0 10px 40px rgba(0, 0, 0, 0.8);
 }
 
 .editorial-statement-block {
   position: relative;
   padding-left: 0;
-  margin-bottom: 35px;
+  margin-bottom: 30px;
 }
 
 .hero-statement {
-  font-family: "Gotham", "Gotham SSm", "Montserrat", sans-serif;
-  font-style: normal;
-  font-size: clamp(20px, 2.2vw, 30px);
-  line-height: 1.4;
+  font-family: "Times New Roman", "Playfair Display", "Noto Serif TC", serif;
+  font-style: italic;
+  font-size: clamp(22px, 2.4vw, 34px);
+  line-height: 1.35;
   color: #ffffff;
-  font-weight: 500;
+  font-weight: 400;
   margin-bottom: 15px;
 }
 
@@ -1928,9 +1938,48 @@ body.loading-locked {
   opacity: 0.95;
 }
 
+/* PROMINENT METADATA DOSSIER BAR (WatchHouse / Payy Style) */
+.project-metadata-dossier-bar {
+  margin-bottom: 70px;
+  padding: 30px clamp(20px, 3vw, 40px);
+  background: rgba(15, 15, 15, 0.9);
+  border-top: 1px solid var(--pantone-yellow);
+  border-bottom: 1px solid var(--pantone-yellow);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+}
+
+.dossier-metadata-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 25px 40px;
+}
+
+.dossier-meta-item {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.dossier-meta-label {
+  font-family: "Gotham", "Gotham SSm", "Montserrat", sans-serif;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.25em;
+  color: var(--pantone-yellow);
+  text-transform: uppercase;
+}
+
+.dossier-meta-val {
+  font-family: "Gotham", "Gotham SSm", "Montserrat", sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  color: #ffffff;
+  line-height: 1.4;
+}
+
 /* ULTRA-WIDE CINEMATIC PLAYER SCREEN */
 .project-player-section {
-  margin-bottom: 110px;
+  margin-bottom: 100px;
 }
 
 .editorial-player-frame {
@@ -1938,11 +1987,10 @@ body.loading-locked {
   background-color: #000000;
   border: 1px solid var(--pantone-yellow);
   border-radius: 0;
-  padding: 40px 0;
+  padding: 35px 0;
   box-shadow: 0 40px 100px -20px rgba(255, 198, 39, 0.15);
 }
 
-/* Corner decorations representing cinematic target frames */
 .player-corner-accent {
   position: absolute;
   font-family: "Gotham", "Gotham SSm", "Montserrat", sans-serif;
@@ -1970,13 +2018,8 @@ body.loading-locked {
   opacity: 0.8;
 }
 
-.player-meta-strip.top {
-  margin-bottom: 25px;
-}
-
-.player-meta-strip.bottom {
-  margin-top: 25px;
-}
+.player-meta-strip.top { margin-bottom: 20px; }
+.player-meta-strip.bottom { margin-top: 20px; }
 
 .live-badge {
   display: flex;
@@ -2030,7 +2073,7 @@ body.loading-locked {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 40px;
-  margin-bottom: 120px;
+  margin-bottom: 90px;
 }
 
 @media (max-width: 1024px) {
@@ -2043,17 +2086,20 @@ body.loading-locked {
 .dossier-card {
   position: relative;
   border-left: 2px solid var(--pantone-yellow);
-  background: rgba(12, 12, 12, 0.8);
-  padding: 30px 25px 35px 35px;
+  background: rgba(12, 12, 12, 0.9);
+  padding: 35px 30px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+  border-top: 1px solid rgba(255, 198, 39, 0.15);
+  border-right: 1px solid rgba(255, 198, 39, 0.15);
+  border-bottom: 1px solid rgba(255, 198, 39, 0.15);
+  transition: transform 0.3s ease, border-color 0.3s ease;
 }
 
-@media (max-width: 768px) {
-  .dossier-card {
-    padding-left: 20px;
-  }
+.dossier-card:hover {
+  border-color: var(--pantone-yellow);
+  transform: translateY(-4px);
 }
 
 .dossier-card-header {
@@ -2084,7 +2130,7 @@ body.loading-locked {
 .dossier-card-body {
   font-family: "Gotham", "Gotham SSm", "Montserrat", sans-serif;
   font-size: clamp(14px, 1.05vw, 15px);
-  line-height: 1.8;
+  line-height: 1.85;
   color: #ffffff;
   margin-bottom: 25px;
 }
@@ -2105,43 +2151,422 @@ body.loading-locked {
   width: 100%;
 }
 
-/* Metadata List in Dossier */
-.editorial-meta-list {
+/* BESPOKE CUSTOM TABBED INTERACTIVE MODULE */
+.bespoke-interactive-section {
+  margin-bottom: 90px;
+}
+
+.section-header-tag {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  margin-bottom: 30px;
+}
+
+.section-header-tag h2 {
+  font-family: "Gotham", "Gotham SSm", "Montserrat", sans-serif;
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: 0.25em;
+  color: var(--pantone-yellow);
+  text-transform: uppercase;
+  margin: 0;
+}
+
+.gold-dash {
+  font-family: "Gotham", "Gotham SSm", "Montserrat", sans-serif;
+  font-size: 20px;
+  color: var(--pantone-yellow);
+  font-weight: 700;
+}
+
+.custom-tabs-navigation {
+  display: flex;
+  gap: 15px;
+  overflow-x: auto;
+  padding-bottom: 10px;
+  margin-bottom: 25px;
+  border-bottom: 1px solid rgba(255, 198, 39, 0.2);
+}
+
+.custom-tab-btn {
+  background: rgba(255, 198, 39, 0.03);
+  border: 1px solid rgba(255, 198, 39, 0.3);
+  color: #ffffff;
+  padding: 14px 24px;
+  font-family: "Gotham", "Gotham SSm", "Montserrat", sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  transition: all 0.3s ease;
+  white-space: nowrap;
+}
+
+.custom-tab-btn:hover {
+  border-color: var(--pantone-yellow);
+  background: rgba(255, 198, 39, 0.12);
+}
+
+.custom-tab-btn.active {
+  background: var(--pantone-yellow);
+  color: #000000;
+  border-color: var(--pantone-yellow);
+  box-shadow: 0 10px 25px rgba(255, 198, 39, 0.2);
+}
+
+.custom-tab-btn .tab-badge {
+  font-size: 9px;
+  padding: 3px 8px;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.15);
+  color: inherit;
+}
+
+.custom-tab-btn.active .tab-badge {
+  background: #000000;
+  color: var(--pantone-yellow);
+}
+
+.custom-tab-content-card {
+  background: rgba(15, 15, 15, 0.95);
+  border: 1px solid var(--pantone-yellow);
+  padding: 40px;
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 40px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
+}
+
+@media (max-width: 900px) {
+  .custom-tab-content-card {
+    grid-template-columns: 1fr;
+    gap: 30px;
+    padding: 25px;
+  }
+}
+
+.tab-content-main {
   display: flex;
   flex-direction: column;
-  gap: 18px;
-}
-
-.editorial-meta-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
   gap: 20px;
-  border-bottom: 1px solid rgba(255, 198, 39, 0.15);
-  padding-bottom: 12px;
 }
 
-.editorial-meta-row:last-child {
-  border-bottom: none;
-  padding-bottom: 0;
+.tab-content-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  border-bottom: 1px solid rgba(255, 198, 39, 0.2);
+  padding-bottom: 15px;
 }
 
-.meta-row-label {
+.tab-content-header h3 {
+  font-family: "Gotham", "Gotham SSm", "Montserrat", "Noto Serif TC", sans-serif;
+  font-size: clamp(18px, 1.8vw, 24px);
+  font-weight: 700;
+  color: var(--pantone-yellow);
+  margin: 0;
+}
+
+.tab-header-badge {
   font-family: "Gotham", "Gotham SSm", "Montserrat", sans-serif;
   font-size: 10px;
   font-weight: 700;
   letter-spacing: 0.2em;
-  color: var(--pantone-yellow);
-  text-transform: uppercase;
-  flex-shrink: 0;
+  color: #000000;
+  background: var(--pantone-yellow);
+  padding: 6px 14px;
 }
 
-.meta-row-value {
+.tab-description {
+  font-family: "Gotham", "Gotham SSm", "Montserrat", sans-serif;
+  font-size: 15px;
+  line-height: 1.8;
+  color: #ffffff;
+  margin: 0;
+}
+
+.tab-details-list h4 {
+  font-family: "Gotham", "Gotham SSm", "Montserrat", sans-serif;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.25em;
+  color: var(--pantone-yellow);
+  text-transform: uppercase;
+  margin-bottom: 15px;
+}
+
+.tab-details-list ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.tab-details-list li {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
   font-family: "Gotham", "Gotham SSm", "Montserrat", sans-serif;
   font-size: 14px;
-  font-weight: 500;
   color: #ffffff;
-  text-align: right;
+  line-height: 1.5;
+}
+
+.tab-details-list .list-dot {
+  color: var(--pantone-yellow);
+}
+
+.tab-content-sidebar {
+  background: rgba(0, 0, 0, 0.6);
+  border: 1px solid rgba(255, 198, 39, 0.2);
+  padding: 25px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.tab-content-sidebar h4 {
+  font-family: "Gotham", "Gotham SSm", "Montserrat", sans-serif;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.25em;
+  color: var(--pantone-yellow);
+  text-transform: uppercase;
+  margin: 0;
+  border-bottom: 1px solid rgba(255, 198, 39, 0.2);
+  padding-bottom: 10px;
+}
+
+.tab-sidebar-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.tab-sidebar-row {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.tab-sidebar-row .meta-label {
+  font-family: "Gotham", "Gotham SSm", "Montserrat", sans-serif;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  color: var(--pantone-yellow);
+}
+
+.tab-sidebar-row .meta-val {
+  font-family: "Gotham", "Gotham SSm", "Montserrat", sans-serif;
+  font-size: 13px;
+  color: #ffffff;
+}
+
+/* BESPOKE SERVICES SECTION */
+.bespoke-services-section {
+  margin-bottom: 90px;
+}
+
+/* BESPOKE GALLERY SECTION & LIGHTBOX */
+.bespoke-gallery-section {
+  margin-bottom: 90px;
+}
+
+.gallery-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 25px;
+}
+
+.gallery-card-item {
+  background: rgba(15, 15, 15, 0.9);
+  border: 1px solid rgba(255, 198, 39, 0.25);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  overflow: hidden;
+}
+
+.gallery-card-item:hover {
+  border-color: var(--pantone-yellow);
+  transform: translateY(-5px);
+  box-shadow: 0 15px 35px rgba(255, 198, 39, 0.15);
+}
+
+.gallery-placeholder-box {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  background: #080808;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  border-bottom: 1px solid rgba(255, 198, 39, 0.2);
+}
+
+.gallery-grid-pattern {
+  position: absolute;
+  inset: 0;
+  background-image: linear-gradient(rgba(255, 198, 39, 0.08) 1px, transparent 1px),
+                    linear-gradient(90deg, rgba(255, 198, 39, 0.08) 1px, transparent 1px);
+  background-size: 20px 20px;
+}
+
+.gallery-play-icon {
+  position: relative;
+  z-index: 2;
+  font-size: 24px;
+  color: var(--pantone-yellow);
+  transition: transform 0.3s ease;
+}
+
+.gallery-card-item:hover .gallery-play-icon {
+  transform: scale(1.25);
+}
+
+.gallery-index-tag {
+  position: absolute;
+  bottom: 10px;
+  right: 12px;
+  font-family: "Gotham", "Gotham SSm", "Montserrat", sans-serif;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  color: var(--pantone-yellow);
+}
+
+.gallery-card-info {
+  padding: 18px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.gallery-category {
+  font-family: "Gotham", "Gotham SSm", "Montserrat", sans-serif;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  color: var(--pantone-yellow);
+}
+
+.gallery-title {
+  font-family: "Gotham", "Gotham SSm", "Montserrat", "Noto Serif TC", sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  color: #ffffff;
+}
+
+/* Lightbox Modal */
+.gallery-lightbox-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  background: rgba(0, 0, 0, 0.92);
+  backdrop-filter: blur(15px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 30px;
+}
+
+.lightbox-content-box {
+  position: relative;
+  width: 100%;
+  max-width: 900px;
+  background: #050505;
+  border: 1px solid var(--pantone-yellow);
+  box-shadow: 0 30px 90px rgba(255, 198, 39, 0.25);
+  display: flex;
+  flex-direction: column;
+}
+
+.lightbox-close-btn {
+  position: absolute;
+  top: -20px;
+  right: -20px;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: var(--pantone-yellow);
+  color: #000000;
+  border: none;
+  font-size: 24px;
+  font-weight: 300;
+  cursor: pointer;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.lightbox-media-view {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  background: #000000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.lightbox-simulated-frame {
+  width: 100%;
+  height: 100%;
+  border: 2px solid rgba(255, 198, 39, 0.3);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 15px;
+  padding: 40px;
+  text-align: center;
+  background-image: linear-gradient(rgba(255, 198, 39, 0.05) 1px, transparent 1px),
+                    linear-gradient(90deg, rgba(255, 198, 39, 0.05) 1px, transparent 1px);
+  background-size: 30px 30px;
+}
+
+.lightbox-watermark {
+  font-family: "Gotham", "Gotham SSm", "Montserrat", sans-serif;
+  font-size: 10px;
+  letter-spacing: 0.3em;
+  color: var(--pantone-yellow);
+  opacity: 0.8;
+}
+
+.lightbox-title-overlay {
+  font-family: "Gotham", "Gotham SSm", "Montserrat", "Noto Serif TC", sans-serif;
+  font-size: clamp(20px, 2.5vw, 32px);
+  font-weight: 700;
+  color: #ffffff;
+  text-transform: uppercase;
+}
+
+.lightbox-meta-bar {
+  padding: 20px 30px;
+  background: rgba(15, 15, 15, 0.95);
+  border-top: 1px solid rgba(255, 198, 39, 0.3);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-family: "Gotham", "Gotham SSm", "Montserrat", sans-serif;
+  font-size: 11px;
+  color: #ffffff;
+}
+
+.lightbox-category-tag {
+  color: var(--pantone-yellow);
+  font-weight: 700;
+  letter-spacing: 0.2em;
 }
 
 /* Services Badge Pills */
@@ -2155,7 +2580,7 @@ body.loading-locked {
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  padding: 8px 16px;
+  padding: 10px 20px;
   background-color: rgba(255, 198, 39, 0.05);
   border: 1px solid rgba(255, 198, 39, 0.3);
   border-radius: 0;
@@ -2188,7 +2613,6 @@ body.loading-locked {
 .span-full-width {
   grid-column: 1 / -1;
   border-left: 2px solid var(--pantone-yellow);
-  margin-top: 20px;
 }
 
 .editorial-extra-columns {
@@ -2482,6 +2906,7 @@ body.loading-locked {
   background-color: var(--pantone-yellow);
   color: #000000;
 }
+
 
 
 

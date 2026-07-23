@@ -139,9 +139,11 @@ function createShader(gl: WebGLRenderingContext, type: number, source: string) {
   return shader;
 }
 
-function createTexture(gl: WebGLRenderingContext, source: string) {
+function createTexture(gl: WebGLRenderingContext, source: string, isDisposed: () => boolean) {
   const texture = gl.createTexture();
   const state = { texture, ready: false };
+  if (!texture) return state;
+
   gl.bindTexture(gl.TEXTURE_2D, texture);
   gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
   gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
@@ -161,12 +163,17 @@ function createTexture(gl: WebGLRenderingContext, source: string) {
 
   const image = new Image();
   image.onload = () => {
-    gl.bindTexture(gl.TEXTURE_2D, texture);
-    // UV coordinates are authored top-down to match the source artwork.
-    gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, false);
-    gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, true);
-    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image);
-    state.ready = true;
+    if (isDisposed()) return;
+    try {
+      if (!gl.isTexture(texture)) return;
+      gl.bindTexture(gl.TEXTURE_2D, texture);
+      gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, false);
+      gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, true);
+      gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image);
+      state.ready = true;
+    } catch {
+      // Safely ignore WebGL errors if context or texture was disposed
+    }
   };
   image.src = source;
   return state;
@@ -187,6 +194,9 @@ export default function CharacterMotionCanvas({ progress }: Props) {
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
+    let disposed = false;
+    const isDisposed = () => disposed;
+
     const gl = canvas.getContext("webgl", {
       alpha: true,
       antialias: true,
@@ -245,8 +255,8 @@ export default function CharacterMotionCanvas({ progress }: Props) {
     };
     gl.uniform1i(uniforms.texture, 0);
 
-    const male = createTexture(gl, "/assets/hero-layers/male.png");
-    const cat = createTexture(gl, "/assets/hero-layers/cat.png");
+    const male = createTexture(gl, "/assets/hero-layers/male.png", isDisposed);
+    const cat = createTexture(gl, "/assets/hero-layers/cat.png", isDisposed);
     const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
     const textureAspect = 1672 / 941;
     let frame = 0;
@@ -255,6 +265,7 @@ export default function CharacterMotionCanvas({ progress }: Props) {
     gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
 
     const render = () => {
+      if (disposed) return;
       const ratio = Math.min(window.devicePixelRatio || 1, 1.6);
       const width = Math.max(1, Math.round(canvas.clientWidth * ratio));
       const height = Math.max(1, Math.round(canvas.clientHeight * ratio));
@@ -286,15 +297,19 @@ export default function CharacterMotionCanvas({ progress }: Props) {
       gl.uniform1f(uniforms.etch, etch);
       gl.activeTexture(gl.TEXTURE0);
 
-      if (male.ready) {
-        gl.bindTexture(gl.TEXTURE_2D, male.texture);
-        gl.uniform1f(uniforms.character, 0);
-        gl.drawElements(gl.TRIANGLES, indices.length, gl.UNSIGNED_SHORT, 0);
-      }
-      if (cat.ready) {
-        gl.bindTexture(gl.TEXTURE_2D, cat.texture);
-        gl.uniform1f(uniforms.character, 1);
-        gl.drawElements(gl.TRIANGLES, indices.length, gl.UNSIGNED_SHORT, 0);
+      try {
+        if (male.ready && male.texture) {
+          gl.bindTexture(gl.TEXTURE_2D, male.texture);
+          gl.uniform1f(uniforms.character, 0);
+          gl.drawElements(gl.TRIANGLES, indices.length, gl.UNSIGNED_SHORT, 0);
+        }
+        if (cat.ready && cat.texture) {
+          gl.bindTexture(gl.TEXTURE_2D, cat.texture);
+          gl.uniform1f(uniforms.character, 1);
+          gl.drawElements(gl.TRIANGLES, indices.length, gl.UNSIGNED_SHORT, 0);
+        }
+      } catch {
+        // Prevent uncaught WebGL errors
       }
 
       frame = requestAnimationFrame(render);
@@ -302,14 +317,19 @@ export default function CharacterMotionCanvas({ progress }: Props) {
     frame = requestAnimationFrame(render);
 
     return () => {
+      disposed = true;
       cancelAnimationFrame(frame);
-      gl.deleteTexture(male.texture);
-      gl.deleteTexture(cat.texture);
-      gl.deleteBuffer(vertexBuffer);
-      gl.deleteBuffer(indexBuffer);
-      gl.deleteProgram(program);
-      gl.deleteShader(vertex);
-      gl.deleteShader(fragment);
+      try {
+        if (male.texture && gl.isTexture(male.texture)) gl.deleteTexture(male.texture);
+        if (cat.texture && gl.isTexture(cat.texture)) gl.deleteTexture(cat.texture);
+        gl.deleteBuffer(vertexBuffer);
+        gl.deleteBuffer(indexBuffer);
+        gl.deleteProgram(program);
+        gl.deleteShader(vertex);
+        gl.deleteShader(fragment);
+      } catch {
+        // Safe cleanup
+      }
     };
   }, []);
 

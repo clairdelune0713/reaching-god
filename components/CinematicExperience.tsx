@@ -136,18 +136,8 @@ export default function CinematicExperience() {
   // Preloading & Buffering States
   const [heroBgLoaded, setHeroBgLoaded] = useState(false);
   const [videosLoaded, setVideosLoaded] = useState<boolean[]>([false, false, false, false, false, false]);
-  const [isEntered, setIsEntered] = useState(() => {
-    if (typeof window !== "undefined") {
-      return sessionStorage.getItem("lastProjectChapter") !== null;
-    }
-    return false;
-  });
-  const [isPreloaded, setIsPreloaded] = useState(() => {
-    if (typeof window !== "undefined") {
-      return sessionStorage.getItem("lastProjectChapter") !== null;
-    }
-    return false;
-  });
+  const [isEntered, setIsEntered] = useState(false);
+  const [isPreloaded, setIsPreloaded] = useState(false);
   const [timedOut, setTimedOut] = useState(false);
 
   const smoothIntroRef = useRef(0);
@@ -159,6 +149,84 @@ export default function CinematicExperience() {
   const menuOpenRef = useRef(menuOpen);
   const isEnteredRef = useRef(isEntered);
 
+  // Keep refs in sync
+  useEffect(() => {
+    isEnteredRef.current = isEntered;
+    if (isEntered && typeof window !== "undefined") {
+      sessionStorage.setItem("hasVisitedAIFX", "true");
+    }
+  }, [isEntered]);
+
+  useEffect(() => {
+    menuOpenRef.current = menuOpen;
+  }, [menuOpen]);
+
+  // Lock body scroll when preloader is active
+  useEffect(() => {
+    if (!isEntered) {
+      document.body.classList.add("loading-locked");
+    } else {
+      document.body.classList.remove("loading-locked");
+    }
+    return () => {
+      document.body.classList.remove("loading-locked");
+    };
+  }, [isEntered]);
+
+  // Configure browser scroll behavior and reset on mount
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      if (
+        sessionStorage.getItem("lastProjectChapter") !== null ||
+        sessionStorage.getItem("hasVisitedAIFX") === "true"
+      ) {
+        setIsEntered(true);
+        setIsPreloaded(true);
+      }
+      sessionStorage.setItem("hasVisitedAIFX", "true");
+    }
+    if ("scrollRestoration" in window.history) {
+      window.history.scrollRestoration = "manual";
+    }
+
+    const lastChapterStr = sessionStorage.getItem("lastProjectChapter");
+    if (lastChapterStr !== null) {
+      const index = parseInt(lastChapterStr, 10);
+      if (!isNaN(index)) {
+        // Sync states immediately to prevent flashing
+        targetIntroRef.current = Math.min(index + 1, 2);
+        smoothIntroRef.current = Math.min(index + 1, 2);
+        setActiveChapter(index);
+        setScrollProgress(index + 1);
+
+        // Ensure CSS variables are updated
+        const root = rootRef.current;
+        if (root) {
+          root.style.setProperty("--intro", "1.0000");
+          root.style.setProperty("--collapse", "1.0000");
+          root.style.setProperty("--etch", "0.0000");
+          root.style.setProperty("--reveal", "1.0000");
+          root.style.setProperty("--copy-reveal", "1.0000");
+          root.style.setProperty("--etch-opacity", "0.0000");
+          root.style.setProperty("--hero-opacity", "0.0000");
+          root.style.setProperty("--accent", chapters[Math.max(index, 0)].accent);
+        }
+
+        const restoreScrollPos = () => {
+          const targetScroll = (index + 1) * window.innerHeight;
+          window.scrollTo(0, targetScroll);
+        };
+
+        restoreScrollPos();
+        setTimeout(restoreScrollPos, 50);
+        setTimeout(restoreScrollPos, 150);
+      }
+      sessionStorage.removeItem("lastProjectChapter");
+    } else {
+      window.scrollTo(0, 0);
+    }
+  }, []);
+
   // Compute loading percentage
   const loadingProgress = 
     (heroBgLoaded ? 10 : 0) +
@@ -169,7 +237,7 @@ export default function CinematicExperience() {
     (videosLoaded[4] ? 12 : 0) +
     (videosLoaded[5] ? 12 : 0);
 
-  // Retrieve responsive target BGM volume (0.12 for desktop/web, 0.08 for phone/mobile)
+  // Retrieve responsive target BGM volume
   const getTargetVolume = useCallback(() => {
     if (typeof window !== "undefined") {
       const isMobile = /Mobi|Android|iPhone|iPad/i.test(navigator.userAgent) || 
@@ -179,7 +247,7 @@ export default function CinematicExperience() {
     return 0.12;
   }, []);
 
-  // Initialize Web Audio API AudioContext and GainNode for precise programmatic volume control (especially on iOS/mobile)
+  // Initialize Web Audio API AudioContext and GainNode
   const initAudioContext = useCallback(() => {
     const audio = bgmRef.current;
     if (!audio || audioCtxRef.current) return;
@@ -189,37 +257,31 @@ export default function CinematicExperience() {
       if (AudioContextClass) {
         const ctx = new AudioContextClass();
         const gain = ctx.createGain();
-        
-        // Connect HTMLAudioElement -> GainNode -> Destination
         const source = ctx.createMediaElementSource(audio);
         source.connect(gain);
         gain.connect(ctx.destination);
         
         audioCtxRef.current = ctx;
         gainNodeRef.current = gain;
-        
-        // Set HTMLAudioElement volume to full; throttle volume programmatically via GainNode
         audio.volume = 1;
         gain.gain.setValueAtTime(0, ctx.currentTime);
       }
-    } catch (err) {
-      console.warn("Web Audio API initialization failed:", err);
+    } catch {
+      // AudioContext initialization fallback
     }
   }, []);
 
-  // Audio Fade Utility for bgm.m4a (Web Audio API powered)
+  // Audio Fade Utility
   const fadeAudio = useCallback((targetVolume: number, durationMs: number) => {
     const audio = bgmRef.current;
     if (!audio) return;
 
-    // Initialize AudioContext if not already done
     initAudioContext();
 
     const ctx = audioCtxRef.current;
     const gainNode = gainNodeRef.current;
 
     const runFade = () => {
-      // Resume context if suspended (browser autoplay policy requirement)
       if (ctx && ctx.state === "suspended") {
         ctx.resume().catch(() => undefined);
       }
@@ -256,77 +318,72 @@ export default function CinematicExperience() {
           runFade();
         })
         .catch(() => {
-          // Autoplay fallback: wait for user interaction to trigger play and fade
           const playOnInteraction = () => {
+            window.removeEventListener("pointerdown", playOnInteraction);
+            window.removeEventListener("keydown", playOnInteraction);
+            window.removeEventListener("wheel", playOnInteraction);
             if (ctx && ctx.state === "suspended") {
               ctx.resume().catch(() => undefined);
             }
-            audio.play()
-              .then(() => {
-                setSoundOn(true);
-                runFade();
-              })
-              .catch(() => undefined);
-            cleanup();
+            audio.play().then(runFade).catch(() => undefined);
           };
-
-          const cleanup = () => {
-            window.removeEventListener("click", playOnInteraction);
-            window.removeEventListener("mousedown", playOnInteraction);
-            window.removeEventListener("touchstart", playOnInteraction);
-            window.removeEventListener("keydown", playOnInteraction);
-            window.removeEventListener("pointerdown", playOnInteraction);
-          };
-
-          window.addEventListener("click", playOnInteraction, { passive: true });
-          window.addEventListener("mousedown", playOnInteraction, { passive: true });
-          window.addEventListener("touchstart", playOnInteraction, { passive: true });
-          window.addEventListener("keydown", playOnInteraction, { passive: true });
-          window.addEventListener("pointerdown", playOnInteraction, { passive: true });
+          window.addEventListener("pointerdown", playOnInteraction, { once: true });
+          window.addEventListener("keydown", playOnInteraction, { once: true });
+          window.addEventListener("wheel", playOnInteraction, { once: true });
         });
     } else {
       runFade();
     }
   }, [initAudioContext]);
 
-  // Entrance transition to the landing page (BGM slowly rises)
-  const handleEnter = useCallback(() => {
-    setIsEntered(true);
-    document.body.classList.remove("loading-locked");
-
-    // Force scroll to top on enter to override browser scroll restoration jumps
-    window.scrollTo(0, 0);
-    requestAnimationFrame(() => {
-      window.scrollTo(0, 0);
+  // Sound toggle button click handler
+  const toggleAmbience = useCallback(() => {
+    setSoundOn((current) => {
+      const next = !current;
+      fadeAudio(next ? getTargetVolume() : 0, 1000);
+      return next;
     });
-
-    fadeAudio(getTargetVolume(), 2000); // 2s celestial slow fade in
-    setSoundOn(true);
-
-    setTimeout(() => {
-      setIsPreloaded(true);
-    }, 1800); // Match globals.css preloader-overlay fade transition
   }, [fadeAudio, getTargetVolume]);
 
-  useEffect(() => {
-    menuOpenRef.current = menuOpen;
-  }, [menuOpen]);
+  const handleVideoReady = useCallback((index: number) => {
+    setVideosLoaded((prev) => {
+      if (prev[index]) return prev;
+      const next = [...prev];
+      next[index] = true;
+      return next;
+    });
+  }, []);
 
-  useEffect(() => {
-    isEnteredRef.current = isEntered;
-  }, [isEntered]);
-
-  // Lock body scroll when preloader is active
-  useEffect(() => {
-    if (!isEntered) {
-      document.body.classList.add("loading-locked");
-    } else {
-      document.body.classList.remove("loading-locked");
+  const handleEnter = useCallback(() => {
+    setIsEntered(true);
+    setIsPreloaded(true);
+    if (typeof window !== "undefined") {
+      sessionStorage.setItem("hasVisitedAIFX", "true");
     }
-    return () => {
-      document.body.classList.remove("loading-locked");
-    };
-  }, [isEntered]);
+
+    const video = videosRef.current[0];
+    if (video) {
+      video.play().catch(() => undefined);
+    }
+  }, []);
+
+  // Preloader timeout fallback
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setTimedOut(true);
+    }, 4500);
+    return () => clearTimeout(timer);
+  }, []);
+
+  // Auto-entering passage after loading completes
+  useEffect(() => {
+    if ((loadingProgress >= 100 || timedOut) && !isEntered) {
+      const delayTimer = setTimeout(() => {
+        handleEnter();
+      }, 1000);
+      return () => clearTimeout(delayTimer);
+    }
+  }, [loadingProgress, timedOut, isEntered, handleEnter]);
 
   // Initialize and clean up bgm.m4a
   useEffect(() => {
@@ -343,96 +400,7 @@ export default function CinematicExperience() {
     };
   }, []);
 
-  // Configure browser scroll behavior and reset on mount
-  useEffect(() => {
-    if ("scrollRestoration" in window.history) {
-      window.history.scrollRestoration = "manual";
-    }
-
-    const lastChapterStr = sessionStorage.getItem("lastProjectChapter");
-    if (lastChapterStr !== null) {
-      const index = parseInt(lastChapterStr, 10);
-      if (!isNaN(index)) {
-        // Sync states immediately to prevent flashing
-        targetIntroRef.current = Math.min(index + 1, 2);
-        smoothIntroRef.current = Math.min(index + 1, 2);
-        setActiveChapter(index);
-        setScrollProgress(index + 1);
-
-        // Also ensure variables are set in CSS properties immediately
-        const root = rootRef.current;
-        if (root) {
-          root.style.setProperty("--intro", "1.0000");
-          root.style.setProperty("--collapse", "1.0000");
-          root.style.setProperty("--etch", "0.0000");
-          root.style.setProperty("--reveal", "1.0000");
-          root.style.setProperty("--copy-reveal", "1.0000");
-          root.style.setProperty("--etch-opacity", "0.0000");
-          root.style.setProperty("--hero-opacity", "0.0000");
-          root.style.setProperty("--accent", chapters[Math.max(index, 0)].accent);
-        }
-
-        // Delay scrolling slightly to allow browser layout calculation and override Next.js default scroll restoration
-        setTimeout(() => {
-          const targetScroll = (index + 1) * window.innerHeight;
-          window.scrollTo(0, targetScroll);
-        }, 80);
-      }
-      sessionStorage.removeItem("lastProjectChapter");
-    } else {
-      window.scrollTo(0, 0);
-    }
-  }, []);
-
-  // Auto-entering passage after loading completes
-  useEffect(() => {
-    if ((loadingProgress >= 100 || timedOut) && !isEntered) {
-      const delayTimer = setTimeout(() => {
-        handleEnter();
-      }, 1000); // 1s delay at 100% for visual breathing room
-      return () => clearTimeout(delayTimer);
-    }
-  }, [loadingProgress, timedOut, isEntered, handleEnter]);
-
-  // Monitor image & video preloading
-  useEffect(() => {
-    const img = new Image();
-    img.src = "/assets/hero-layers/background.png";
-    img.onload = () => setHeroBgLoaded(true);
-    img.onerror = () => setHeroBgLoaded(true);
-
-    const interval = setInterval(() => {
-      videosRef.current.forEach((video, index) => {
-        if (video && video.readyState >= 2) {
-          setVideosLoaded((prev) => {
-            if (prev[index]) return prev;
-            const next = [...prev];
-            next[index] = true;
-            return next;
-          });
-        }
-      });
-    }, 250);
-
-    const timeout = setTimeout(() => {
-      setTimedOut(true);
-    }, 6000); // 6s maximum load time fallback
-
-    return () => {
-      clearInterval(interval);
-      clearTimeout(timeout);
-    };
-  }, []);
-
-  const handleVideoReady = (index: number) => {
-    setVideosLoaded((prev) => {
-      if (prev[index]) return prev;
-      const next = [...prev];
-      next[index] = true;
-      return next;
-    });
-  };
-
+  // Scroll event handling (Wheel, Keyboard, Touch)
   useEffect(() => {
     const handleWheel = (e: WheelEvent) => {
       if (!isEnteredRef.current) {
@@ -441,17 +409,17 @@ export default function CinematicExperience() {
       }
       if (menuOpenRef.current) return;
 
-      // Prevent native momentum-based scrolling
+      // Prevent default page scroll
       e.preventDefault();
 
       const now = Date.now();
-      // Swallow events during active transitions and momentum cooldown
-      if (isTransitioningRef.current || now - lastScrollTimeRef.current < 800) {
+      // Reduced cooldown to 400ms for smooth, responsive user feel
+      if (isTransitioningRef.current || now - lastScrollTimeRef.current < 400) {
         return;
       }
 
-      // Ignore small jitter / low-magnitude wheel movements
-      if (Math.abs(e.deltaY) < 10) return;
+      // Ignore low-magnitude scroll noise
+      if (Math.abs(e.deltaY) < 6) return;
 
       const viewport = Math.max(window.innerHeight, 1);
       const currentPage = Math.round(window.scrollY / viewport);
@@ -474,7 +442,7 @@ export default function CinematicExperience() {
 
         setTimeout(() => {
           isTransitioningRef.current = false;
-        }, 800);
+        }, 450);
       }
     };
 
@@ -503,7 +471,7 @@ export default function CinematicExperience() {
       e.preventDefault();
 
       const now = Date.now();
-      if (isTransitioningRef.current || now - lastScrollTimeRef.current < 800) {
+      if (isTransitioningRef.current || now - lastScrollTimeRef.current < 400) {
         return;
       }
 
@@ -528,7 +496,7 @@ export default function CinematicExperience() {
 
         setTimeout(() => {
           isTransitioningRef.current = false;
-        }, 800);
+        }, 450);
       }
     };
 
@@ -561,11 +529,10 @@ export default function CinematicExperience() {
       const touchEndY = e.changedTouches[0].clientY;
       const deltaY = touchStartY - touchEndY;
 
-      // Minimum swipe distance threshold of 50px
-      if (Math.abs(deltaY) < 50) return;
+      if (Math.abs(deltaY) < 40) return;
 
       const now = Date.now();
-      if (isTransitioningRef.current || now - lastScrollTimeRef.current < 800) {
+      if (isTransitioningRef.current || now - lastScrollTimeRef.current < 400) {
         return;
       }
 
@@ -591,7 +558,7 @@ export default function CinematicExperience() {
 
         setTimeout(() => {
           isTransitioningRef.current = false;
-        }, 800);
+        }, 450);
       }
     };
 
@@ -697,6 +664,10 @@ export default function CinematicExperience() {
     const raw = clamp(window.scrollY / viewport, 0, chapters.length);
     const intro = clamp(raw, 0, 2);
 
+    const nextActive = raw < 0.64 ? -1 : clamp(Math.round(raw) - 1, 0, chapters.length - 1);
+    root.style.setProperty("--accent", chapters[Math.max(nextActive, 0)].accent);
+    setActiveChapter((current) => (current === nextActive ? current : nextActive));
+
     targetIntroRef.current = intro;
     if (lerpFrameRef.current === null) {
       lerpFrameRef.current = requestAnimationFrame(animateIntro);
@@ -729,17 +700,6 @@ export default function CinematicExperience() {
       else video.pause();
     });
   }, [activeChapter]);
-
-  const toggleAmbience = useCallback(() => {
-    const enable = !soundOn;
-    if (enable) {
-      fadeAudio(getTargetVolume(), 1400);
-      setSoundOn(true);
-    } else {
-      fadeAudio(0, 500);
-      setSoundOn(false);
-    }
-  }, [soundOn, fadeAudio, getTargetVolume]);
 
   useEffect(() => {
     document.body.classList.toggle("menu-is-open", menuOpen);
