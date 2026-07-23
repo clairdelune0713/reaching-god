@@ -175,22 +175,16 @@ export default function CinematicExperience() {
 
   // Configure browser scroll behavior and reset on mount
   useEffect(() => {
-    if (typeof window !== "undefined") {
-      if (
-        sessionStorage.getItem("lastProjectChapter") !== null ||
-        sessionStorage.getItem("hasVisitedAIFX") === "true"
-      ) {
-        setIsEntered(true);
-        setIsPreloaded(true);
-      }
-      sessionStorage.setItem("hasVisitedAIFX", "true");
-    }
     if ("scrollRestoration" in window.history) {
       window.history.scrollRestoration = "manual";
     }
 
-    const lastChapterStr = sessionStorage.getItem("lastProjectChapter");
+    const lastChapterStr = typeof window !== "undefined" ? sessionStorage.getItem("lastProjectChapter") : null;
+    const hasVisited = typeof window !== "undefined" ? sessionStorage.getItem("hasVisitedAIFX") === "true" : false;
+
     if (lastChapterStr !== null) {
+      setIsEntered(true);
+      setIsPreloaded(true);
       const index = parseInt(lastChapterStr, 10);
       if (!isNaN(index)) {
         // Sync states immediately to prevent flashing
@@ -222,8 +216,27 @@ export default function CinematicExperience() {
         setTimeout(restoreScrollPos, 150);
       }
       sessionStorage.removeItem("lastProjectChapter");
+    } else if (hasVisited) {
+      // Returning to landing page without chapter target: reset cleanly to top hero
+      setIsEntered(true);
+      setIsPreloaded(true);
+      const resetToTop = () => {
+        window.scrollTo(0, 0);
+        targetIntroRef.current = 0;
+        smoothIntroRef.current = 0;
+        setActiveChapter(-1);
+      };
+      resetToTop();
+      setTimeout(resetToTop, 50);
+      setTimeout(resetToTop, 150);
     } else {
-      window.scrollTo(0, 0);
+      // First visit: enforce scroll top for preloader
+      const resetToTop = () => {
+        window.scrollTo(0, 0);
+      };
+      resetToTop();
+      setTimeout(resetToTop, 50);
+      setTimeout(resetToTop, 150);
     }
   }, []);
 
@@ -360,6 +373,19 @@ export default function CinematicExperience() {
     if (typeof window !== "undefined") {
       sessionStorage.setItem("hasVisitedAIFX", "true");
     }
+
+    // Force scroll reset to top landing hero page on mobile and desktop
+    const resetToTop = () => {
+      window.scrollTo(0, 0);
+      targetIntroRef.current = 0;
+      smoothIntroRef.current = 0;
+      setActiveChapter(-1);
+    };
+
+    resetToTop();
+    requestAnimationFrame(resetToTop);
+    setTimeout(resetToTop, 50);
+    setTimeout(resetToTop, 150);
 
     const video = videosRef.current[0];
     if (video) {
