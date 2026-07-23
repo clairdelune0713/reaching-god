@@ -52,7 +52,7 @@ const projectsData: Record<string, ProjectData> = {
     ],
     videoUrl: "https://video.henrywithu.com/w/hYfxKmHQGNbaSauDDB9VhW",
     embedUrl: "https://video.henrywithu.com/videos/embed/hYfxKmHQGNbaSauDDB9VhW",
-    accentColor: "#c56c56",
+    accentColor: "#FFC627",
     closing: "A PROPRIETARY MODEL DEVELOPED FOR PRODUCTION-SPECIFIC CINEMATIC WORLDS.",
   },
   "welab": {
@@ -84,7 +84,7 @@ const projectsData: Record<string, ProjectData> = {
     ],
     videoUrl: "https://video.henrywithu.com/w/6brriZm7p4RAH7RsFQ3xQ9",
     embedUrl: "https://video.henrywithu.com/videos/embed/6brriZm7p4RAH7RsFQ3xQ9",
-    accentColor: "#4f8c86",
+    accentColor: "#FFC627",
     extraSections: [
       {
         title: "CAMPAIGN CONTENT",
@@ -137,7 +137,7 @@ const projectsData: Record<string, ProjectData> = {
     ],
     videoUrl: "https://video.henrywithu.com/w/qxpUFhgVZnhBd4wWKy6m8q",
     embedUrl: "https://video.henrywithu.com/videos/embed/qxpUFhgVZnhBd4wWKy6m8q",
-    accentColor: "#b7a45a",
+    accentColor: "#FFC627",
     extraSections: [
       {
         title: "FESTIVE SEGMENTS",
@@ -179,7 +179,7 @@ const projectsData: Record<string, ProjectData> = {
     ],
     videoUrl: "https://video.henrywithu.com/w/7vShiUEuhpAhJ2d4TEoDJJ",
     embedUrl: "https://video.henrywithu.com/videos/embed/7vShiUEuhpAhJ2d4TEoDJJ",
-    accentColor: "#6d7359",
+    accentColor: "#FFC627",
     extraSections: [
       {
         title: "FEATURED PRODUCTIONS",
@@ -220,7 +220,7 @@ const projectsData: Record<string, ProjectData> = {
     ],
     videoUrl: "https://video.henrywithu.com/w/bpATqtNwc5d235NSHjKcGP",
     embedUrl: "https://video.henrywithu.com/videos/embed/bpATqtNwc5d235NSHjKcGP",
-    accentColor: "#91a7ae",
+    accentColor: "#FFC627",
     extraSections: [
       {
         title: "CHARACTER & WORLD-BUILDING",
